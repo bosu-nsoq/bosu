@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Bosu - แหล่งรวมแอปที่พัฒนาโดย Bosu</title>
+  <title>Bosu</title>
   
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://i.postimg.cc/0j2mFF1q/Bosu.png">
@@ -11,13 +11,12 @@
   
   <!-- PWA & Apple Mobile Web App Tags -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#4361EE">
+  <meta name="theme-color" content="#FFFFFF">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Bosu">
   <link rel="apple-touch-icon" href="https://i.postimg.cc/0j2mFF1q/Bosu.png">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="แหล่งรวมแอปที่พัฒนาโดย Bosu">
 
   <!-- Google Font: Mali -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,21 +28,14 @@
 
   <style>
     :root {
-      --primary: #4361EE;
-      --primary-light: #EEF2FF;
-      --primary-dark: #3730A3;
-      --accent: #FF5E7E;
-      --bg-body: #F4F7FC;
+      --bg-space: #FFFFFF;
       --bg-card: #FFFFFF;
-      --text-main: #1E293B;
-      --text-muted: #64748B;
-      --border-color: #E2E8F0;
-      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-      --shadow-md: 0 8px 24px rgba(67, 97, 238, 0.08);
-      --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.12);
-      --radius-sm: 10px;
-      --radius-md: 16px;
-      --radius-lg: 24px;
+      --text-main: #0F172A;
+      --text-sub: #475569;
+      --orbit-line: rgba(148, 163, 184, 0.22);
+      --border-card: #E2E8F0;
+      --shadow-card: 0 4px 20px rgba(15, 23, 42, 0.05);
+      --shadow-hover: 0 12px 30px rgba(99, 102, 241, 0.12);
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
@@ -57,7 +49,7 @@
     }
 
     body {
-      background-color: var(--bg-body);
+      background-color: var(--bg-space);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
@@ -65,21 +57,88 @@
       overflow-x: hidden;
       padding-top: var(--safe-top);
       padding-bottom: var(--safe-bottom);
+      position: relative;
     }
 
     /* ============================================================
-       TOP HEADER (Strictly single-line on mobile portrait)
+       SOLAR SYSTEM / COSMOS BACKGROUND (White & Clean)
+       ============================================================ */
+    .space-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      background: 
+        radial-gradient(circle at 50% 25%, rgba(241, 245, 249, 0.9) 0%, rgba(255, 255, 255, 1) 75%);
+    }
+
+    /* Orbital Rings */
+    .orbit-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px dashed var(--orbit-line);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .orbit-1 { width: 380px; height: 380px; animation: rotateOrbit 90s linear infinite; }
+    .orbit-2 { width: 680px; height: 680px; animation: rotateOrbit 160s linear infinite reverse; }
+    .orbit-3 { width: 1020px; height: 1020px; animation: rotateOrbit 240s linear infinite; }
+
+    /* Celestial Planet Dot on Orbit */
+    .planet-dot {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #818CF8;
+      box-shadow: 0 0 10px rgba(129, 140, 248, 0.6);
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .planet-dot-2 {
+      width: 8px;
+      height: 8px;
+      background: #38BDF8;
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+      bottom: 0;
+      top: auto;
+    }
+
+    @keyframes rotateOrbit {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    /* Subtle Stars */
+    .star {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: #94A3B8;
+      border-radius: 50%;
+      opacity: 0.35;
+    }
+
+    /* ============================================================
+       TOP HEADER (Clean, Minimal, Single line on mobile)
        ============================================================ */
     .app-header {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-color);
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-card);
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 50;
       height: 64px;
-      padding: 0 16px;
+      padding: 0 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -89,68 +148,32 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      min-width: 0;
-      flex: 1;
       white-space: nowrap;
-      overflow: hidden;
     }
 
     .app-brand-logo {
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       border-radius: 12px;
       object-fit: cover;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
       flex-shrink: 0;
       background: #FFF;
-      border: 1px solid var(--border-color);
-    }
-
-    .brand-meta {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      min-width: 0;
-      white-space: nowrap;
+      border: 1px solid var(--border-card);
     }
 
     .brand-title {
-      font-size: 1.25rem;
+      font-size: 1.35rem;
       font-weight: 700;
-      color: var(--primary);
-      line-height: 1.2;
+      color: var(--text-main);
+      letter-spacing: 0.5px;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .brand-subtitle {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     .header-right {
       display: flex;
       align-items: center;
       gap: 10px;
-      flex-shrink: 0;
-      white-space: nowrap;
-    }
-
-    .thai-date-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--primary-light);
-      color: var(--primary);
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 0.82rem;
-      font-weight: 600;
       white-space: nowrap;
     }
 
@@ -158,7 +181,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: linear-gradient(135deg, #4361EE, #3A0CA3);
+      background: #0F172A;
       color: #FFF;
       border: none;
       padding: 6px 14px;
@@ -166,316 +189,134 @@
       font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
       transition: all 0.2s ease;
       white-space: nowrap;
     }
 
     .btn-install:hover {
+      background: #334155;
       transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(67, 97, 238, 0.35);
     }
 
     /* ============================================================
        MAIN CONTENT CONTAINER
        ============================================================ */
     .main-container {
-      max-width: 1080px;
+      position: relative;
+      z-index: 10;
+      max-width: 900px;
       width: 100%;
       margin: 0 auto;
-      padding: 24px 16px 40px;
+      padding: 40px 20px 60px;
       flex: 1;
-    }
-
-    /* Hero Banner */
-    .hero-banner {
-      background: linear-gradient(135deg, #4361EE 0%, #4895EF 100%);
-      border-radius: var(--radius-lg);
-      padding: 28px 24px;
-      color: #FFF;
-      box-shadow: var(--shadow-md);
-      margin-bottom: 24px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-banner::after {
-      content: '';
-      position: absolute;
-      right: -20px;
-      bottom: -30px;
-      width: 160px;
-      height: 160px;
-      background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
-      border-radius: 50%;
-      pointer-events: none;
-    }
-
-    .hero-tag {
-      display: inline-block;
-      background: rgba(255, 255, 255, 0.25);
-      padding: 4px 12px;
-      border-radius: 30px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      margin-bottom: 10px;
-      backdrop-filter: blur(4px);
-    }
-
-    .hero-title {
-      font-size: 1.7rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-      line-height: 1.3;
-    }
-
-    .hero-desc {
-      font-size: 0.95rem;
-      font-weight: 400;
-      opacity: 0.95;
-      max-width: 580px;
-      line-height: 1.5;
-    }
-
-    /* Search & Filter Controls */
-    .controls-wrapper {
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      margin-bottom: 24px;
+      align-items: center;
+      justify-content: center;
     }
 
-    .search-box {
-      position: relative;
-      width: 100%;
-    }
-
-    .search-box i {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      font-size: 1.1rem;
-    }
-
-    .search-input {
-      width: 100%;
-      height: 48px;
-      padding: 0 16px 0 46px;
-      border-radius: var(--radius-md);
-      border: 1.5px solid var(--border-color);
-      background: #FFF;
-      font-size: 0.95rem;
-      color: var(--text-main);
-      outline: none;
-      transition: all 0.2s ease;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .search-input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
-    }
-
-    .category-chips {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      scrollbar-width: none;
-    }
-    .category-chips::-webkit-scrollbar {
-      display: none;
-    }
-
-    .chip {
-      padding: 6px 14px;
-      background: #FFF;
-      border: 1px solid var(--border-color);
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-
-    .chip.active, .chip:hover {
-      background: var(--primary);
-      color: #FFF;
-      border-color: var(--primary);
-      box-shadow: 0 2px 8px rgba(67, 97, 238, 0.25);
-    }
-
-    /* Apps Grid */
+    /* App Launcher Grid - Focused on Name & Icon */
     .apps-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      width: 100%;
+      max-width: 800px;
+      margin: auto 0;
     }
 
     .app-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 22px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--border-card);
+      border-radius: 24px;
+      padding: 32px 20px;
       display: flex;
       flex-direction: column;
-      box-shadow: var(--shadow-sm);
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: var(--shadow-card);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
       overflow: hidden;
+      user-select: none;
+    }
+
+    .app-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
     }
 
     .app-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-md);
+      transform: translateY(-6px) scale(1.02);
       border-color: #CBD5E1;
+      box-shadow: var(--shadow-hover);
     }
 
-    .card-top {
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      margin-bottom: 14px;
+    .app-card:hover::before {
+      opacity: 1;
     }
 
+    .app-card:active {
+      transform: scale(0.98);
+    }
+
+    /* Prominent App Icon */
     .app-icon-wrap {
-      width: 56px;
-      height: 56px;
-      border-radius: 16px;
-      background: #F8FAFC;
-      border: 1px solid var(--border-color);
+      width: 88px;
+      height: 88px;
+      border-radius: 24px;
+      background: #FFFFFF;
+      border: 1px solid var(--border-card);
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-      overflow: hidden;
-      padding: 6px;
+      margin-bottom: 18px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+      padding: 10px;
+      transition: transform 0.3s ease;
+    }
+
+    .app-card:hover .app-icon-wrap {
+      transform: scale(1.08);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
     }
 
     .app-icon-img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      border-radius: 10px;
+      border-radius: 14px;
     }
 
-    .card-title-meta {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .card-title {
+    /* App Name */
+    .app-title {
       font-size: 1.15rem;
       font-weight: 700;
       color: var(--text-main);
-      margin-bottom: 4px;
       line-height: 1.3;
+      letter-spacing: 0.2px;
+      transition: color 0.2s ease;
     }
 
-    .badge-category {
-      display: inline-block;
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 2px 10px;
-      border-radius: 12px;
-      background: #F1F5F9;
-      color: var(--text-muted);
-    }
-
-    .card-desc {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-      margin-bottom: 20px;
-      flex: 1;
-    }
-
-    .card-actions {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      margin-top: auto;
-    }
-
-    .btn-launch {
-      flex: 1;
-      height: 44px;
-      border-radius: var(--radius-md);
-      background: var(--primary);
-      color: #FFF;
-      border: none;
-      font-size: 0.95rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
-      transition: all 0.2s ease;
-    }
-
-    .btn-launch:hover {
-      background: var(--primary-dark);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(67, 97, 238, 0.3);
-    }
-
-    .btn-external {
-      width: 44px;
-      height: 44px;
-      border-radius: var(--radius-md);
-      background: #F1F5F9;
-      color: var(--text-muted);
-      border: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 1.1rem;
-      text-decoration: none;
-    }
-
-    .btn-external:hover {
-      background: #E2E8F0;
-      color: var(--text-main);
-    }
-
-    /* Empty state */
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--text-muted);
-      grid-column: 1 / -1;
-      display: none;
-    }
-
-    .empty-state i {
-      font-size: 3rem;
-      margin-bottom: 12px;
-      opacity: 0.5;
-    }
-
-    /* Footer */
-    .app-footer {
-      border-top: 1px solid var(--border-color);
-      background: #FFF;
-      padding: 20px 16px;
-      text-align: center;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-top: auto;
+    .app-card:hover .app-title {
+      color: #4361EE;
     }
 
     /* ============================================================
-       IN-APP FULLSCREEN WEB APP VIEWER (No URL bar visible!)
+       IN-APP FULLSCREEN WEB APP VIEWER (Clean Solar/Universe Theme)
        ============================================================ */
     .inapp-viewer {
       position: fixed;
@@ -485,7 +326,7 @@
       bottom: 0;
       width: 100vw;
       height: 100vh;
-      background: #000;
+      background: #FFFFFF;
       z-index: 9999;
       display: none;
       flex-direction: column;
@@ -499,46 +340,49 @@
     }
 
     .viewer-navbar {
-      background: #1E293B;
-      color: #FFF;
+      background: #FFFFFF;
+      color: var(--text-main);
       height: 56px;
-      padding: 0 12px;
+      padding: 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid var(--border-card);
       flex-shrink: 0;
       padding-top: var(--safe-top);
       box-sizing: content-box;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
     }
 
     .viewer-nav-left {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       min-width: 0;
       flex: 1;
       white-space: nowrap;
     }
 
+    /* Back button: Only "Bosu" */
     .btn-viewer-back {
-      background: rgba(255, 255, 255, 0.15);
-      border: none;
-      color: #FFF;
-      padding: 6px 12px;
+      background: #F1F5F9;
+      border: 1px solid var(--border-card);
+      color: var(--text-main);
+      padding: 6px 14px;
       border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
+      font-size: 0.9rem;
+      font-weight: 700;
       display: flex;
       align-items: center;
       gap: 6px;
       cursor: pointer;
-      transition: background 0.2s ease;
+      transition: all 0.2s ease;
       white-space: nowrap;
     }
 
     .btn-viewer-back:hover {
-      background: rgba(255, 255, 255, 0.25);
+      background: #E2E8F0;
+      transform: translateX(-2px);
     }
 
     .viewer-app-info {
@@ -557,15 +401,16 @@
       object-fit: cover;
       background: #FFF;
       flex-shrink: 0;
+      border: 1px solid var(--border-card);
     }
 
     .viewer-app-title {
-      font-size: 0.95rem;
+      font-size: 0.98rem;
       font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      color: #FFF;
+      color: var(--text-main);
     }
 
     .viewer-nav-right {
@@ -576,9 +421,9 @@
     }
 
     .viewer-tool-btn {
-      background: transparent;
-      border: none;
-      color: #CBD5E1;
+      background: #F1F5F9;
+      border: 1px solid var(--border-card);
+      color: var(--text-main);
       width: 36px;
       height: 36px;
       border-radius: 50%;
@@ -588,12 +433,10 @@
       font-size: 1.1rem;
       cursor: pointer;
       transition: all 0.2s ease;
-      text-decoration: none;
     }
 
     .viewer-tool-btn:hover {
-      background: rgba(255, 255, 255, 0.15);
-      color: #FFF;
+      background: #E2E8F0;
     }
 
     .viewer-iframe-wrapper {
@@ -621,17 +464,17 @@
       flex-direction: column;
       align-items: center;
       gap: 12px;
-      color: var(--text-muted);
+      color: var(--text-sub);
       font-weight: 500;
       pointer-events: none;
       transition: opacity 0.3s ease;
     }
 
     .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid rgba(67, 97, 238, 0.2);
-      border-top-color: var(--primary);
+      width: 38px;
+      height: 38px;
+      border: 3px solid rgba(15, 23, 42, 0.1);
+      border-top-color: #0F172A;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
@@ -640,16 +483,14 @@
       to { transform: rotate(360deg); }
     }
 
-    /* ============================================================
-       iOS PWA Install Modal Guide
-       ============================================================ */
+    /* iOS Modal Guide */
     .ios-modal-overlay {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.4);
       z-index: 10000;
       display: none;
       align-items: flex-end;
@@ -663,7 +504,7 @@
       max-width: 500px;
       border-radius: 24px 24px 0 0;
       padding: 24px 20px 32px;
-      box-shadow: var(--shadow-lg);
+      box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.15);
       animation: slideUp 0.3s ease;
     }
 
@@ -689,7 +530,7 @@
       background: none;
       border: none;
       font-size: 1.4rem;
-      color: var(--text-muted);
+      color: var(--text-sub);
       cursor: pointer;
     }
 
@@ -698,15 +539,15 @@
       align-items: center;
       gap: 14px;
       padding: 12px 0;
-      border-bottom: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-card);
       font-size: 0.95rem;
     }
 
     .ios-step-num {
       width: 32px;
       height: 32px;
-      background: var(--primary-light);
-      color: var(--primary);
+      background: #EEF2FF;
+      color: #4361EE;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -715,48 +556,52 @@
       flex-shrink: 0;
     }
 
-    /* Responsive adjustments */
     @media (max-width: 640px) {
       .apps-grid {
         grid-template-columns: 1fr;
+        max-width: 320px;
+        gap: 18px;
       }
-      .hero-title {
-        font-size: 1.45rem;
+      .app-card {
+        padding: 24px 16px;
       }
-      .hero-banner {
-        padding: 20px 18px;
+      .app-icon-wrap {
+        width: 76px;
+        height: 76px;
+        margin-bottom: 12px;
       }
-      .brand-title {
-        font-size: 1.15rem;
-      }
-      .thai-date-badge {
-        font-size: 0.75rem;
-        padding: 4px 8px;
-      }
-      .btn-install {
-        padding: 5px 10px;
-        font-size: 0.8rem;
+      .main-container {
+        padding: 24px 16px;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Header Navigation (Single line on mobile portrait) -->
+  <!-- Solar System / Cosmos White Ambient Background -->
+  <div class="space-background">
+    <div class="orbit-ring orbit-1">
+      <div class="planet-dot"></div>
+    </div>
+    <div class="orbit-ring orbit-2">
+      <div class="planet-dot planet-dot-2"></div>
+    </div>
+    <div class="orbit-ring orbit-3"></div>
+    <div class="star" style="top: 15%; left: 20%;"></div>
+    <div class="star" style="top: 25%; left: 80%;"></div>
+    <div class="star" style="top: 65%; left: 15%;"></div>
+    <div class="star" style="top: 75%; left: 85%;"></div>
+    <div class="star" style="top: 40%; left: 90%;"></div>
+  </div>
+
+  <!-- Header Navigation -->
   <header class="app-header">
     <div class="header-left">
       <img src="https://i.postimg.cc/0j2mFF1q/Bosu.png" alt="Bosu Logo" class="app-brand-logo">
-      <div class="brand-meta">
-        <span class="brand-title">Bosu</span>
-        <span class="brand-subtitle">แหล่งรวมแอปที่พัฒนาโดย Bosu</span>
-      </div>
+      <span class="brand-title">Bosu</span>
     </div>
     
     <div class="header-right">
-      <span class="thai-date-badge" id="thaiDateDisplay">
-        <i class="bi bi-calendar2-event"></i>
-        <span id="thaiDateText">กำลังโหลดวันที่...</span>
-      </span>
       <button class="btn-install" id="btnInstallApp" style="display: none;" onclick="handleInstallClick()">
         <i class="bi bi-download"></i>
         <span>ติดตั้งแอป</span>
@@ -764,128 +609,47 @@
     </div>
   </header>
 
-  <!-- Main Content -->
+  <!-- Main Content: Clean App Launcher Grid (Focused on Name & Icon) -->
   <main class="main-container">
-    
-    <!-- Hero Banner -->
-    <section class="hero-banner">
-      <span class="hero-tag"><i class="bi bi-stars"></i> WEB APP HUB</span>
-      <h1 class="hero-title">ยินดีต้อนรับสู่ Bosu</h1>
-      <p class="hero-desc">
-        แหล่งรวมเว็บแอปพลิเคชันที่พัฒนาโดย Bosu รวบรวมเครื่องมือและระบบต่างๆ ไว้ในที่เดียว เปิดใช้งานแบบ Web App ได้เต็มจอ สะดวกและรวดเร็ว
-      </p>
-    </section>
-
-    <!-- Controls: Search & Category Chips -->
-    <section class="controls-wrapper">
-      <div class="search-box">
-        <i class="bi bi-search"></i>
-        <input type="text" id="searchInput" class="search-input" placeholder="ค้นหาเว็บแอป เช่น ห้องสมุด, การเงิน, Lunar...">
-      </div>
-      
-      <div class="category-chips" id="categoryChips">
-        <button class="chip active" data-cat="all">ทั้งหมด (3)</button>
-        <button class="chip" data-cat="library">ระบบห้องสมุด</button>
-        <button class="chip" data-cat="financial">การเงินและบัญชี</button>
-      </div>
-    </section>
-
-    <!-- App Cards Grid -->
     <section class="apps-grid" id="appsGrid">
       
       <!-- App 1: WNTK Library System -->
-      <article class="app-card" data-category="library" data-name="wntk library system ระบบห้องสมุด">
-        <div class="card-top">
-          <div class="app-icon-wrap" style="background: rgba(45, 106, 79, 0.08);">
-            <img src="https://i.postimg.cc/D0Dw84J1/WNTK.png" alt="WNTK Library System" class="app-icon-img">
-          </div>
-          <div class="card-title-meta">
-            <h2 class="card-title">WNTK Library System</h2>
-            <span class="badge-category" style="color: #2D6A4F; background: #E8F5E9;">ระบบห้องสมุด</span>
-          </div>
+      <div class="app-card" onclick="launchInApp('https://bosu-nsoq.github.io/wntk-library-system/', 'WNTK Library System', 'https://i.postimg.cc/D0Dw84J1/WNTK.png')">
+        <div class="app-icon-wrap">
+          <img src="https://i.postimg.cc/D0Dw84J1/WNTK.png" alt="WNTK Library System" class="app-icon-img">
         </div>
-        <p class="card-desc">ระบบบริหารจัดการและสืบค้นห้องสมุด WNTK สำหรับการค้นหาและยืม-คืนหนังสือ</p>
-        <div class="card-actions">
-          <button class="btn-launch" style="background: #2D6A4F;" onclick="launchInApp('https://bosu-nsoq.github.io/wntk-library-system/', 'WNTK Library System', 'https://i.postimg.cc/D0Dw84J1/WNTK.png')">
-            <i class="bi bi-box-arrow-up-right"></i>
-            <span>เปิดใช้งานแอป</span>
-          </button>
-          <a href="https://bosu-nsoq.github.io/wntk-library-system/" target="_blank" rel="noopener noreferrer" class="btn-external" title="เปิดในแท็บใหม่">
-            <i class="bi bi-arrow-up-right"></i>
-          </a>
-        </div>
-      </article>
+        <h2 class="app-title">WNTK Library System</h2>
+      </div>
 
       <!-- App 2: Financial -->
-      <article class="app-card" data-category="financial" data-name="financial การเงิน บันทึกการใช้เงิน">
-        <div class="card-top">
-          <div class="app-icon-wrap" style="background: rgba(255, 154, 158, 0.12);">
-            <img src="https://i.postimg.cc/T2Cngdnd/Financial.png" alt="Financial" class="app-icon-img">
-          </div>
-          <div class="card-title-meta">
-            <h2 class="card-title">Financial</h2>
-            <span class="badge-category" style="color: #E63946; background: #FFE3E3;">การเงินและบัญชี</span>
-          </div>
+      <div class="app-card" onclick="launchInApp('https://bosu-nsoq.github.io/financial/', 'Financial', 'https://i.postimg.cc/T2Cngdnd/Financial.png')">
+        <div class="app-icon-wrap">
+          <img src="https://i.postimg.cc/T2Cngdnd/Financial.png" alt="Financial" class="app-icon-img">
         </div>
-        <p class="card-desc">ระบบบันทึกการใช้เงิน ติดตามสภาพคล่องและสรุปยอดการใช้จ่าย</p>
-        <div class="card-actions">
-          <button class="btn-launch" style="background: #E63946;" onclick="launchInApp('https://bosu-nsoq.github.io/financial/', 'Financial', 'https://i.postimg.cc/T2Cngdnd/Financial.png')">
-            <i class="bi bi-box-arrow-up-right"></i>
-            <span>เปิดใช้งานแอป</span>
-          </button>
-          <a href="https://bosu-nsoq.github.io/financial/" target="_blank" rel="noopener noreferrer" class="btn-external" title="เปิดในแท็บใหม่">
-            <i class="bi bi-arrow-up-right"></i>
-          </a>
-        </div>
-      </article>
+        <h2 class="app-title">Financial</h2>
+      </div>
 
       <!-- App 3: Lunar -->
-      <article class="app-card" data-category="financial" data-name="lunar รายจ่าย บันทึกรายจ่าย">
-        <div class="card-top">
-          <div class="app-icon-wrap" style="background: rgba(108, 92, 231, 0.1);">
-            <img src="https://i.postimg.cc/xC1sKNwZ/Lunar.png" alt="Lunar" class="app-icon-img">
-          </div>
-          <div class="card-title-meta">
-            <h2 class="card-title">Lunar</h2>
-            <span class="badge-category" style="color: #6C5CE7; background: #F0EDFF;">บันทึกรายจ่าย</span>
-          </div>
+      <div class="app-card" onclick="launchInApp('https://bosu-nsoq.github.io/lunar/', 'Lunar', 'https://i.postimg.cc/xC1sKNwZ/Lunar.png')">
+        <div class="app-icon-wrap">
+          <img src="https://i.postimg.cc/xC1sKNwZ/Lunar.png" alt="Lunar" class="app-icon-img">
         </div>
-        <p class="card-desc">ระบบสำหรับใช้บันทึกรายจ่ายประจำวัน เรียบง่าย ใช้งานสะดวกรวดเร็ว</p>
-        <div class="card-actions">
-          <button class="btn-launch" style="background: #6C5CE7;" onclick="launchInApp('https://bosu-nsoq.github.io/lunar/', 'Lunar', 'https://i.postimg.cc/xC1sKNwZ/Lunar.png')">
-            <i class="bi bi-box-arrow-up-right"></i>
-            <span>เปิดใช้งานแอป</span>
-          </button>
-          <a href="https://bosu-nsoq.github.io/lunar/" target="_blank" rel="noopener noreferrer" class="btn-external" title="เปิดในแท็บใหม่">
-            <i class="bi bi-arrow-up-right"></i>
-          </a>
-        </div>
-      </article>
-
-      <!-- Empty State -->
-      <div class="empty-state" id="emptyState">
-        <i class="bi bi-search"></i>
-        <p>ไม่พบเว็บแอปที่ค้นหา</p>
+        <h2 class="app-title">Lunar</h2>
       </div>
 
     </section>
-
   </main>
 
-  <!-- Footer -->
-  <footer class="app-footer">
-    <p>© <span id="thaiYearText">2569</span> <strong>Bosu</strong> — แหล่งรวมแอปที่พัฒนาโดย Bosu</p>
-  </footer>
-
   <!-- ============================================================
-       IN-APP FULLSCREEN WEB APP VIEWER (No URL Bar Displayed)
+       IN-APP FULLSCREEN WEB APP VIEWER (No URL Bar, Clean Theme)
        ============================================================ -->
   <div class="inapp-viewer" id="inAppViewer">
     <div class="viewer-navbar">
       <div class="viewer-nav-left">
+        <!-- Back button text changed to only "Bosu" -->
         <button class="btn-viewer-back" onclick="closeInAppViewer()">
           <i class="bi bi-chevron-left"></i>
-          <span>กลับหน้าหลัก Bosu</span>
+          <span>Bosu</span>
         </button>
         <div class="viewer-app-info">
           <img src="" alt="" id="viewerIcon" class="viewer-app-icon">
@@ -893,23 +657,17 @@
         </div>
       </div>
       
+      <!-- Only reload button retained (no fullscreen, no external link) -->
       <div class="viewer-nav-right">
-        <button class="viewer-tool-btn" onclick="reloadIframe()" title="รีเฟรชหน้านี้">
+        <button class="viewer-tool-btn" onclick="reloadIframe()" title="รีเฟรช">
           <i class="bi bi-arrow-clockwise"></i>
         </button>
-        <button class="viewer-tool-btn" onclick="toggleFullscreen()" title="โหมดเต็มจอ">
-          <i class="bi bi-arrows-fullscreen"></i>
-        </button>
-        <a href="#" id="viewerExternalLink" target="_blank" rel="noopener noreferrer" class="viewer-tool-btn" title="เปิดในเบราว์เซอร์แยก">
-          <i class="bi bi-box-arrow-up-right"></i>
-        </a>
       </div>
     </div>
 
     <div class="viewer-iframe-wrapper">
       <div class="iframe-loader" id="iframeLoader">
         <div class="spinner"></div>
-        <span>กำลังโหลดแอปพลิเคชัน...</span>
       </div>
       <iframe id="appIframe" class="viewer-iframe" allow="camera; microphone; geolocation; clipboard-read; clipboard-write; fullscreen"></iframe>
     </div>
@@ -924,7 +682,7 @@
       </div>
       <div class="ios-step">
         <div class="ios-step-num">1</div>
-        <div>กดปุ่ม <strong>แชร์ (Share)</strong> <i class="bi bi-share" style="color: var(--primary);"></i> ที่แถบด้านล่างของ Safari</div>
+        <div>กดปุ่ม <strong>แชร์ (Share)</strong> <i class="bi bi-share"></i> ที่แถบด้านล่างของ Safari</div>
       </div>
       <div class="ios-step">
         <div class="ios-step-num">2</div>
@@ -939,22 +697,7 @@
 
   <!-- JavaScript Application Logic -->
   <script>
-    // 1. Thai Date & Calendar Standards (dd/mm/yyyy พ.ศ.)
-    function initThaiDate() {
-      const now = new Date();
-      const day = String(now.getDate()).padStart(2, '0');
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const thaiYear = now.getFullYear() + 543;
-      
-      const formattedDate = `${day}/${month}/${thaiYear}`;
-      const thaiDateEl = document.getElementById('thaiDateText');
-      const thaiYearEl = document.getElementById('thaiYearText');
-      
-      if (thaiDateEl) thaiDateEl.textContent = formattedDate;
-      if (thaiYearEl) thaiYearEl.textContent = thaiYear;
-    }
-
-    // 2. In-App Fullscreen Web App Viewer (No URL Bar displayed)
+    // In-App Fullscreen Web App Viewer (No URL Bar displayed)
     let currentAppUrl = '';
 
     function launchInApp(url, title, iconSrc) {
@@ -963,13 +706,11 @@
       const iframe = document.getElementById('appIframe');
       const viewerTitle = document.getElementById('viewerTitle');
       const viewerIcon = document.getElementById('viewerIcon');
-      const externalLink = document.getElementById('viewerExternalLink');
       const loader = document.getElementById('iframeLoader');
 
       viewerTitle.textContent = title;
       viewerIcon.src = iconSrc;
       viewerIcon.alt = title;
-      externalLink.href = url;
 
       // Show loader and set iframe src
       loader.style.opacity = '1';
@@ -977,7 +718,7 @@
       
       iframe.onload = () => {
         loader.style.opacity = '0';
-        setTimeout(() => { loader.style.display = 'none'; }, 300);
+        setTimeout(() => { loader.style.display = 'none'; }, 200);
       };
 
       iframe.src = url;
@@ -986,7 +727,7 @@
       viewer.classList.add('active');
       document.body.style.overflow = 'hidden';
 
-      // Push history state to enable Android back button to close viewer
+      // Push history state to enable mobile back button to close viewer
       window.history.pushState({ inAppView: true }, title);
     }
 
@@ -997,10 +738,9 @@
       viewer.classList.remove('active');
       document.body.style.overflow = '';
       
-      // Clear iframe to stop memory consumption and sound/video
       setTimeout(() => {
         iframe.src = 'about:blank';
-      }, 300);
+      }, 250);
     }
 
     function reloadIframe() {
@@ -1013,21 +753,6 @@
       }
     }
 
-    function toggleFullscreen() {
-      const elem = document.getElementById('inAppViewer');
-      if (!document.fullscreenElement) {
-        if (elem.requestFullscreen) {
-          elem.requestFullscreen();
-        } else if (elem.webkitRequestFullscreen) {
-          elem.webkitRequestFullscreen();
-        }
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        }
-      }
-    }
-
     // Listen for browser Back button to close In-App Viewer gracefully
     window.addEventListener('popstate', (event) => {
       const viewer = document.getElementById('inAppViewer');
@@ -1036,50 +761,7 @@
       }
     });
 
-    // 3. Search and Category Filter Logic
-    const searchInput = document.getElementById('searchInput');
-    const chips = document.querySelectorAll('.chip');
-    const cards = document.querySelectorAll('.app-card');
-    const emptyState = document.getElementById('emptyState');
-
-    let activeCategory = 'all';
-
-    function filterApps() {
-      const query = searchInput.value.trim().toLowerCase();
-      let visibleCount = 0;
-
-      cards.forEach(card => {
-        const nameAttr = (card.getAttribute('data-name') || '').toLowerCase();
-        const catAttr = card.getAttribute('data-category') || '';
-        
-        const matchesCategory = (activeCategory === 'all' || catAttr === activeCategory);
-        const matchesQuery = !query || nameAttr.includes(query);
-
-        if (matchesCategory && matchesQuery) {
-          card.style.display = 'flex';
-          visibleCount++;
-        } else {
-          card.style.display = 'none';
-        }
-      });
-
-      emptyState.style.display = (visibleCount === 0) ? 'block' : 'none';
-    }
-
-    if (searchInput) {
-      searchInput.addEventListener('input', filterApps);
-    }
-
-    chips.forEach(chip => {
-      chip.addEventListener('click', () => {
-        chips.forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        activeCategory = chip.getAttribute('data-cat');
-        filterApps();
-      });
-    });
-
-    // 4. PWA Installation Handling
+    // PWA Installation Handling
     let deferredPrompt = null;
     const btnInstall = document.getElementById('btnInstallApp');
 
@@ -1091,7 +773,6 @@
       }
     });
 
-    // Check if on iOS Safari to show custom install button
     const isIos = () => {
       const userAgent = window.navigator.userAgent.toLowerCase();
       return /iphone|ipad|ipod/.test(userAgent);
@@ -1126,19 +807,14 @@
       document.getElementById('iosModal').style.display = 'none';
     }
 
-    // 5. Register Service Worker for PWA
+    // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('Bosu PWA Service Worker Registered', reg))
-          .catch(err => console.log('Service Worker Registration Error', err));
+          .then(reg => console.log('Bosu PWA Registered', reg))
+          .catch(err => console.log('SW Error', err));
       });
     }
-
-    // Initialize Thai Date on load
-    document.addEventListener('DOMContentLoaded', () => {
-      initThaiDate();
-    });
   </script>
 </body>
 </html>

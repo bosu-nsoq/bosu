@@ -1,12 +1,12 @@
 {
-  "name": "Bosu - แหล่งรวมแอปที่พัฒนาโดย Bosu",
+  "name": "Bosu",
   "short_name": "Bosu",
-  "description": "แหล่งรวมแอปที่พัฒนาโดย Bosu เข้าใช้งานเว็บแอปต่างๆ ได้ในที่เดียวแบบเต็มจอ",
+  "description": "Bosu Web App",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#F0F4F8",
-  "theme_color": "#4361EE",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFFFF",
   "icons": [
     {
       "src": "https://i.postimg.cc/0j2mFF1q/Bosu.png",

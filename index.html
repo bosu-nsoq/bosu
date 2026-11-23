@@ -1294,19 +1294,22 @@
           <input type="url" id="newAppUrl" class="form-input" placeholder="https://..." oninput="autoDetectFavicon()" required>
         </div>
         
-        <!-- Live Favicon Preview (Auto-detect) -->
+        <!-- Favicon Preview & Auto-Detection -->
         <div class="form-group">
-          <label class="form-label">ไอคอนแอป (ดึง Favicon อัตโนมัติ)</label>
-          <div style="display: flex; align-items: center; gap: 14px; background: rgba(2, 6, 23, 0.6); padding: 10px 14px; border-radius: 14px; border: 1px solid var(--border-space);">
+          <label class="form-label">ไอคอนแอป (ดึงอัตโนมัติ / ใส่ลิงก์เองได้)</label>
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
             <div style="width: 48px; height: 48px; border-radius: 14px; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 6px;">
               <img id="autoFaviconPreview" src="https://i.postimg.cc/0j2mFF1q/Bosu.png" alt="Preview" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
             </div>
             <div style="flex: 1; min-width: 0;">
               <span id="autoFaviconStatus" style="font-size: 0.82rem; color: var(--text-sub); font-weight: 600; display: block;">กรอก URL ด้านบนเพื่อดึง Favicon</span>
-              <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">ระบบจะดึงไอคอนประจำเว็บให้อัตโนมัติ</span>
+              <span style="font-size: 0.74rem; color: var(--text-muted); display: block;">ระบบจะค้นหาและดึง Favicon ให้อัตโนมัติ</span>
             </div>
+            <button type="button" class="btn-header-action" onclick="triggerAutoDetectFavicon()" style="font-size: 0.75rem; padding: 4px 8px;" title="ดึง Favicon อีกครั้ง">
+              <i class="bi bi-arrow-repeat"></i> ดึงใหม่
+            </button>
           </div>
-          <input type="hidden" id="newAppIcon" value="">
+          <input type="url" id="newAppIcon" class="form-input" placeholder="ลิงก์ไอคอน (ดึงให้อัตโนมัติ หรือวางลิงก์รูปเองได้)" oninput="updateManualFaviconPreview(this.value)">
         </div>
 
         <button type="submit" class="btn-submit-action">บันทึกและเพิ่มแอป</button>
@@ -1393,7 +1396,24 @@
     function getApps() {
       try {
         const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) return JSON.parse(stored);
+        if (stored) {
+          const apps = JSON.parse(stored);
+          let modified = false;
+
+          // Repair default apps or broken links if any
+          apps.forEach(app => {
+            const def = DEFAULT_APPS.find(d => d.id === app.id || d.url === app.url);
+            if (def && (!app.icon || app.icon.includes('google.com/s2/favicons?domain=bosu-nsoq.github.io'))) {
+              app.icon = def.icon;
+              modified = true;
+            }
+          });
+
+          if (modified) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
+          }
+          return apps;
+        }
       } catch (e) {
         console.error('Error reading storage', e);
       }
@@ -1434,17 +1454,71 @@
       }
     }
 
-    function getFaviconFromUrl(url) {
-      const domain = getDomainFromUrl(url);
-      if (!domain) return 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
-      return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+    async function resolveFavicon(url) {
+      if (!url) return '';
+      let fullUrl = url.trim();
+      if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) {
+        fullUrl = 'https://' + fullUrl;
+      }
+
+      try {
+        const targetObj = new URL(fullUrl);
+        const domain = targetObj.hostname;
+        const origin = targetObj.origin;
+
+        // 1. Same-Origin or GitHub Pages fetch (parses actual <link rel="icon"> or apple-touch-icon)
+        const isSameOriginOrGithub = (window.location.hostname === domain) || 
+                                    (domain.endsWith('github.io') && window.location.hostname.endsWith('github.io'));
+
+        if (isSameOriginOrGithub) {
+          try {
+            const resp = await fetch(fullUrl);
+            if (resp.ok) {
+              const html = await resp.text();
+              const doc = new DOMParser().parseFromString(html, 'text/html');
+              
+              const iconTags = Array.from(doc.querySelectorAll('link[rel*="icon"], link[rel="apple-touch-icon"]'));
+              for (const tag of iconTags) {
+                const href = tag.getAttribute('href');
+                if (href) {
+                  return new URL(href, fullUrl).href;
+                }
+              }
+
+              const ogImg = doc.querySelector('meta[property="og:image"]');
+              if (ogImg && ogImg.getAttribute('content')) {
+                return new URL(ogImg.getAttribute('content'), fullUrl).href;
+              }
+            }
+          } catch (e) {
+            console.warn('Same-origin fetch failed:', e);
+          }
+        }
+
+        // 2. High-res Google Favicon API (works great for indexed public domains)
+        if (domain && !domain.includes('github.io')) {
+          return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+        }
+
+        // 3. Fallback to origin /favicon.ico
+        return `${origin}/favicon.ico`;
+
+      } catch (e) {
+        return '';
+      }
     }
 
     function handleIconError(img, url) {
+      if (!img.dataset.failCount) img.dataset.failCount = '0';
+      const count = parseInt(img.dataset.failCount, 10);
+      img.dataset.failCount = String(count + 1);
+
       const domain = getDomainFromUrl(url);
-      if (domain && !img.dataset.triedFallback) {
-        img.dataset.triedFallback = '1';
-        img.src = `https://icon.horse/icon/${domain}`;
+
+      if (count === 0 && domain && !domain.includes('github.io')) {
+        img.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+      } else if (count === 1 && domain) {
+        img.src = `https://icons.duckduckgo.com/ip3/${domain}.ico`;
       } else {
         img.src = 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
       }
@@ -1751,36 +1825,54 @@
       }
     }
 
+    let detectTimeout = null;
     function autoDetectFavicon() {
+      clearTimeout(detectTimeout);
+      detectTimeout = setTimeout(async () => {
+        await triggerAutoDetectFavicon();
+      }, 350);
+    }
+
+    async function triggerAutoDetectFavicon() {
       const urlInput = document.getElementById('newAppUrl').value.trim();
       const previewImg = document.getElementById('autoFaviconPreview');
       const statusText = document.getElementById('autoFaviconStatus');
-      const hiddenIcon = document.getElementById('newAppIcon');
+      const iconInput = document.getElementById('newAppIcon');
 
       if (!urlInput) {
         previewImg.src = 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
         statusText.textContent = 'กรอก URL ด้านบนเพื่อดึง Favicon';
         statusText.style.color = 'var(--text-sub)';
-        hiddenIcon.value = '';
+        iconInput.value = '';
         return;
       }
 
-      const domain = getDomainFromUrl(urlInput);
-      if (domain) {
-        const detectedIcon = getFaviconFromUrl(urlInput);
-        previewImg.dataset.triedFallback = '';
-        previewImg.src = detectedIcon;
-        previewImg.onerror = () => {
-          if (!previewImg.dataset.triedFallback) {
-            previewImg.dataset.triedFallback = '1';
-            previewImg.src = `https://icon.horse/icon/${domain}`;
-          } else {
-            previewImg.src = 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
-          }
-        };
-        hiddenIcon.value = detectedIcon;
-        statusText.textContent = `ดึง Favicon ของ ${domain} สำเร็จ`;
-        statusText.style.color = '#38BDF8';
+      statusText.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> กำลังค้นหา Favicon...';
+      statusText.style.color = 'var(--accent-gold)';
+
+      const detected = await resolveFavicon(urlInput);
+      if (detected) {
+        previewImg.src = detected;
+        iconInput.value = detected;
+        statusText.innerHTML = '<i class="bi bi-check-circle-fill" style="color: #10B981;"></i> ดึง Favicon สำเร็จ';
+        statusText.style.color = '#10B981';
+      } else {
+        const domain = getDomainFromUrl(urlInput);
+        const fallback = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=128` : 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
+        previewImg.src = fallback;
+        iconInput.value = fallback;
+        statusText.textContent = 'ใช้ไอคอนตามค่าเริ่มต้น';
+        statusText.style.color = 'var(--text-sub)';
+      }
+    }
+
+    function updateManualFaviconPreview(val) {
+      const previewImg = document.getElementById('autoFaviconPreview');
+      const statusText = document.getElementById('autoFaviconStatus');
+      if (val && val.trim()) {
+        previewImg.src = val.trim();
+        statusText.innerHTML = '<i class="bi bi-check-circle-fill" style="color: var(--accent-cyan);"></i> ใช้ลิงก์ไอคอนที่ระบุ';
+        statusText.style.color = 'var(--accent-cyan)';
       }
     }
 
@@ -1788,14 +1880,14 @@
       document.getElementById('addAppForm').reset();
       const previewImg = document.getElementById('autoFaviconPreview');
       const statusText = document.getElementById('autoFaviconStatus');
-      const hiddenIcon = document.getElementById('newAppIcon');
+      const iconInput = document.getElementById('newAppIcon');
       
       if (previewImg) previewImg.src = 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
       if (statusText) {
         statusText.textContent = 'กรอก URL ด้านบนเพื่อดึง Favicon';
         statusText.style.color = 'var(--text-sub)';
       }
-      if (hiddenIcon) hiddenIcon.value = '';
+      if (iconInput) iconInput.value = '';
       
       document.getElementById('addAppModal').style.display = 'flex';
     }
@@ -1804,7 +1896,7 @@
       document.getElementById('addAppModal').style.display = 'none';
     }
 
-    function handleSaveNewApp(e) {
+    async function handleSaveNewApp(e) {
       e.preventDefault();
       const name = document.getElementById('newAppName').value.trim();
       let url = document.getElementById('newAppUrl').value.trim();
@@ -1815,10 +1907,14 @@
         url = 'https://' + url;
       }
 
-      // Automatically use detected favicon
+      // Check if icon is filled, otherwise resolve it
       let icon = document.getElementById('newAppIcon').value.trim();
       if (!icon) {
-        icon = getFaviconFromUrl(url);
+        icon = await resolveFavicon(url);
+      }
+      if (!icon) {
+        const domain = getDomainFromUrl(url);
+        icon = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=128` : 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
       }
 
       const newApp = {

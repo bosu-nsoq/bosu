@@ -1717,7 +1717,13 @@
           }
         }
         updateCloudBadge('error');
-        if (isManual) alert('⚠️ ไม่สามารถดึงข้อมูลจาก Cloud ได้ โปรดตรวจสอบว่าได้รัน initBosuDatabase ใน Apps Script แล้วหรือยัง');
+        if (isManual) {
+          if (resp && resp.status === 403) {
+            alert('⚠️ ติดสิทธิ์การเข้าถึง (Error 403): โปรดไปที่ Google Apps Script > Deploy > New Deployment และตั้งค่า "ผู้มีสิทธิ์เข้าถึง (Who has access)" ให้เป็น "ทุกคน (Anyone)" ครับ');
+          } else {
+            alert('⚠️ ไม่สามารถดึงข้อมูลจาก Cloud ได้ โปรดตรวจสอบว่าได้ Deploy Web App เป็น "ทุกคน (Anyone)" แล้วหรือยัง');
+          }
+        }
       } catch (e) {
         console.warn('Cloud fetch warning:', e);
         updateCloudBadge('error');

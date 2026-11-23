@@ -260,6 +260,36 @@
       box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
     }
 
+    /* Cloud Sync Status Badge */
+    .cloud-badge {
+      font-size: 0.85rem;
+      padding: 3px 8px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      vertical-align: middle;
+      gap: 4px;
+    }
+    .badge-synced {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38BDF8;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+    .badge-syncing {
+      background: rgba(245, 158, 11, 0.15);
+      color: #FBBF24;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+    .badge-error {
+      background: rgba(148, 163, 184, 0.12);
+      color: #94A3B8;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
     .btn-header-action {
       background: rgba(255, 255, 255, 0.08);
       color: #F8FAFC;
@@ -362,6 +392,11 @@
       background: rgba(168, 85, 247, 0.22);
       color: #C084FC;
       border: 1px solid rgba(168, 85, 247, 0.35);
+    }
+    .icon-cloud-bg {
+      background: rgba(14, 165, 233, 0.2);
+      color: #38BDF8;
+      border: 1px solid rgba(14, 165, 233, 0.35);
     }
 
     /* Reorder Mode Banner */
@@ -1289,6 +1324,7 @@
       <img src="https://i.postimg.cc/0j2mFF1q/Bosu.png" alt="Bosu Logo" class="app-brand-logo">
       <span class="brand-title">Bosu</span>
       <span id="roleIndicator" class="role-badge badge-guest">Guest</span>
+      <span id="cloudSyncStatus" class="cloud-badge badge-syncing" title="สถานะ Cloud Sync (Google Drive/Sheet)" onclick="handleCloudBadgeClick()"><i class="bi bi-cloud-arrow-down"></i></span>
     </div>
     
     <div class="header-right">
@@ -1328,6 +1364,12 @@
             <i class="bi bi-arrows-move"></i>
           </div>
           <span id="reorderMenuText">จัดเรียงแอป</span>
+        </button>
+        <button class="settings-item-btn" onclick="openCloudModal(); toggleSettingsMenu(false);" title="ตั้งค่า Cloud Drive / Sheet">
+          <div class="settings-item-icon icon-cloud-bg">
+            <i class="bi bi-cloud-arrow-up"></i>
+          </div>
+          <span>Cloud Drive/Sheet</span>
         </button>
       </div>
     </div>
@@ -1536,6 +1578,51 @@
   </div>
 
   <!-- ============================================================
+       CLOUD SETTINGS & SYNC MODAL (Google Drive & Sheets)
+       ============================================================ -->
+  <div class="cosmic-modal-overlay" id="cloudSettingsModal" onclick="closeCloudModal(event)">
+    <div class="cosmic-modal-card" style="max-width: 480px;" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="bi bi-cloud-check" style="color: var(--accent-cyan);"></i> ซิงค์ Google Drive & Sheet</h3>
+        <button class="modal-close" onclick="closeCloudModal()">&times;</button>
+      </div>
+      <div style="margin-bottom: 16px;">
+        <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 14px; padding: 12px 14px; margin-bottom: 14px;">
+          <div style="font-size: 0.88rem; font-weight: 700; color: #38BDF8; margin-bottom: 4px;">
+            <i class="bi bi-folder-check"></i> ข้อมูลบน Cloud สำหรับหลายเครื่อง:
+          </div>
+          <div style="font-size: 0.82rem; color: #E2E8F0; line-height: 1.5;">
+            📁 <strong>Google Drive:</strong> โฟลเดอร์ <code style="color: #FBBF24;">Bosu</code><br>
+            📊 <strong>Google Sheets:</strong> สเปรดชีต <code style="color: #FBBF24;">Bosu_Database</code>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Google Apps Script Web App URL</label>
+          <input type="url" id="gasUrlInput" class="form-input" placeholder="https://script.google.com/macros/s/.../exec">
+          <span style="font-size: 0.76rem; color: var(--text-sub); margin-top: 4px; display: block;">
+            ปลายทาง API เชื่อมโยง Google Drive และ Google Sheets สำหรับทุกเครื่อง
+          </span>
+        </div>
+
+        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 12px; padding: 10px 12px; font-size: 0.8rem; color: #FDE68A; margin-bottom: 16px;">
+          <i class="bi bi-info-circle-fill"></i> <strong>สำหรับการเปิดใช้งานครั้งแรก:</strong><br>
+          เปิด <a href="https://script.google.com/d/126IoLzmW493lSPZKc1DWuvmU1MQOLmbJE4kgDG6y68qjZ4jbmZhipuaW/edit" target="_blank" style="color: #38BDF8; text-decoration: underline;">Google Apps Script Editor</a> แล้วเลือกฟังก์ชัน <code>initBosuDatabase</code> จากนั้นกด <strong>เรียกใช้ (Run)</strong> เพื่ออนุมัติสิทธิ์สร้างโฟลเดอร์ Bosu ใน Google Drive ครับ
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button type="button" class="btn-cancel" onclick="handleManualSync()" style="flex: 1; padding: 11px; border-radius: 14px; background: rgba(56, 189, 248, 0.2); border: 1px solid rgba(56, 189, 248, 0.4); color: #38BDF8; font-weight: 700; cursor: pointer;">
+          <i class="bi bi-arrow-repeat"></i> ซิงค์เดี๋ยวนี้
+        </button>
+        <button type="button" class="btn-submit" onclick="handleSaveCloudSettings()" style="flex: 1.2; padding: 11px; border-radius: 14px; background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan)); border: none; color: #FFF; font-weight: 700; cursor: pointer;">
+          <i class="bi bi-check2"></i> บันทึก URL
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
        JAVASCRIPT APPLICATION LOGIC
        ============================================================ -->
   <script>
@@ -1570,8 +1657,133 @@
     let enteredPin = '';
     let currentAppUrl = '';
 
-    // Storage Key
+    // Storage & Cloud Keys
     const STORAGE_KEY = 'bosu_hub_apps_v2';
+    const GAS_URL_KEY = 'bosu_gas_web_app_url';
+    const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwU4F6pBcpY6Uh_3BFdWZhR1qBwHeZ7liz2HquIMzfB_5zx_RYEZ8MzccmG5O7zoNeD/exec';
+
+    function getGasUrl() {
+      return localStorage.getItem(GAS_URL_KEY) || DEFAULT_GAS_URL;
+    }
+
+    function setGasUrl(url) {
+      if (url && url.trim()) {
+        localStorage.setItem(GAS_URL_KEY, url.trim());
+      } else {
+        localStorage.removeItem(GAS_URL_KEY);
+      }
+    }
+
+    function updateCloudBadge(state) {
+      const badge = document.getElementById('cloudSyncStatus');
+      if (!badge) return;
+      if (state === 'syncing') {
+        badge.innerHTML = '<i class="bi bi-arrow-repeat spin"></i>';
+        badge.className = 'cloud-badge badge-syncing';
+        badge.title = 'กำลังซิงค์ข้อมูลกับ Google Drive / Sheet...';
+      } else if (state === 'synced') {
+        badge.innerHTML = '<i class="bi bi-cloud-check-fill"></i>';
+        badge.className = 'cloud-badge badge-synced';
+        badge.title = 'ซิงค์ข้อมูลกับ Google Drive / Sheet เรียบร้อย';
+      } else if (state === 'error') {
+        badge.innerHTML = '<i class="bi bi-cloud-slash"></i>';
+        badge.className = 'cloud-badge badge-error';
+        badge.title = 'ไม่สามารถเชื่อมต่อ Cloud ได้ (ใช้ข้อมูลในเครื่อง)';
+      }
+    }
+
+    async function fetchAppsFromCloud(isManual = false) {
+      const gasUrl = getGasUrl();
+      if (!gasUrl) return;
+
+      updateCloudBadge('syncing');
+
+      try {
+        const resp = await fetch(gasUrl);
+        if (resp.ok) {
+          const res = await resp.json();
+          if (res && res.status === 'success' && Array.isArray(res.data) && res.data.length > 0) {
+            const cloudApps = res.data;
+            const currentLocal = localStorage.getItem(STORAGE_KEY);
+            const cloudJson = JSON.stringify(cloudApps);
+
+            if (currentLocal !== cloudJson) {
+              localStorage.setItem(STORAGE_KEY, cloudJson);
+              renderApps();
+            }
+            updateCloudBadge('synced');
+            if (isManual) alert('✅ ซิงค์ข้อมูลกับ Google Drive / Sheet สำเร็จแล้ว!');
+            return cloudApps;
+          }
+        }
+        updateCloudBadge('error');
+        if (isManual) alert('⚠️ ไม่สามารถดึงข้อมูลจาก Cloud ได้ โปรดตรวจสอบว่าได้รัน initBosuDatabase ใน Apps Script แล้วหรือยัง');
+      } catch (e) {
+        console.warn('Cloud fetch warning:', e);
+        updateCloudBadge('error');
+        if (isManual) alert('⚠️ เกิดข้อผิดพลาดในการเชื่อมต่อ Cloud: ' + e.message);
+      }
+    }
+
+    let cloudSyncTimeout = null;
+    function saveAppsToCloud(apps) {
+      const gasUrl = getGasUrl();
+      if (!gasUrl) return;
+
+      updateCloudBadge('syncing');
+      clearTimeout(cloudSyncTimeout);
+
+      cloudSyncTimeout = setTimeout(async () => {
+        try {
+          const resp = await fetch(gasUrl, {
+            method: 'POST',
+            body: JSON.stringify({
+              action: 'saveApps',
+              apps: apps
+            })
+          });
+          if (resp.ok) {
+            updateCloudBadge('synced');
+          } else {
+            updateCloudBadge('error');
+          }
+        } catch (e) {
+          console.warn('Cloud save warning:', e);
+          updateCloudBadge('error');
+        }
+      }, 400);
+    }
+
+    function openCloudModal() {
+      const input = document.getElementById('gasUrlInput');
+      if (input) input.value = getGasUrl();
+      document.getElementById('cloudSettingsModal').style.display = 'flex';
+    }
+
+    function closeCloudModal(event) {
+      if (event && event.target !== event.currentTarget) return;
+      document.getElementById('cloudSettingsModal').style.display = 'none';
+    }
+
+    function handleSaveCloudSettings() {
+      const input = document.getElementById('gasUrlInput');
+      const url = input ? input.value.trim() : '';
+      setGasUrl(url);
+      closeCloudModal();
+      fetchAppsFromCloud(true);
+    }
+
+    function handleManualSync() {
+      fetchAppsFromCloud(true);
+    }
+
+    function handleCloudBadgeClick() {
+      if (currentRole === 'admin') {
+        openCloudModal();
+      } else {
+        fetchAppsFromCloud();
+      }
+    }
 
     function getApps() {
       try {
@@ -1603,6 +1815,7 @@
     function saveApps(apps) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
       renderApps();
+      saveAppsToCloud(apps);
     }
 
     // 1. Cosmic Loader Logic (Shows Favicon, No Black Screen)
@@ -2365,13 +2578,24 @@
       });
     }
 
-    // Initial Start: Show brief cosmic splash on load then render
+    // Initial Start: Show brief cosmic splash on load, render and sync cloud
     document.addEventListener('DOMContentLoaded', () => {
       showCosmicLoader('https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังเชื่อมต่อ Bosu Hub...');
       renderApps();
+      fetchAppsFromCloud();
       setTimeout(() => {
         hideCosmicLoader();
       }, 400);
+    });
+
+    // Multi-Device Auto Sync on Window Focus / App Resume
+    window.addEventListener('focus', () => {
+      fetchAppsFromCloud();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        fetchAppsFromCloud();
+      }
     });
   </script>
 </body>

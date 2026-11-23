@@ -1610,22 +1610,25 @@
     const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbznuwVPbNJ-QZyKqpJayU2XAIpFrT-FhYzXqaSFyzDdYziPmZiNI-936rHR4oV6FVpT/exec';
 
     let isFetchingCloud = false;
+    let isSavingCloud = false;
 
-    async function fetchAppsFromCloud() {
-      if (isFetchingCloud) return;
+    async function fetchAppsFromCloud(forceRender = false) {
+      if (isFetchingCloud || isSavingCloud) return;
       isFetchingCloud = true;
 
       try {
         const resp = await fetch(DEFAULT_GAS_URL);
         if (resp.ok) {
           const res = await resp.json();
+          if (isSavingCloud) return;
+
           if (res && res.status === 'success' && Array.isArray(res.data) && res.data.length > 0) {
             const cloudApps = res.data;
             const currentLocal = localStorage.getItem(STORAGE_KEY);
             const cloudJson = JSON.stringify(cloudApps);
 
             // If Cloud data differs from local storage, update seamlessly
-            if (currentLocal !== cloudJson) {
+            if (currentLocal !== cloudJson || forceRender) {
               localStorage.setItem(STORAGE_KEY, cloudJson);
               // Avoid interrupting user if they are currently dragging to reorder
               if (!isReorderMode) {
@@ -1642,23 +1645,30 @@
       }
     }
 
-    let cloudSyncTimeout = null;
-    function saveAppsToCloud(apps) {
-      clearTimeout(cloudSyncTimeout);
-
-      cloudSyncTimeout = setTimeout(async () => {
-        try {
-          await fetch(DEFAULT_GAS_URL, {
-            method: 'POST',
-            body: JSON.stringify({
-              action: 'saveApps',
-              apps: apps
-            })
-          });
-        } catch (e) {
-          console.warn('Background Cloud save warning:', e);
+    async function saveAppsToCloudAsync(apps) {
+      isSavingCloud = true;
+      try {
+        const resp = await fetch(DEFAULT_GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'saveApps',
+            apps: apps
+          })
+        });
+        if (resp.ok) {
+          const res = await resp.json();
+          if (res && res.status === 'success' && Array.isArray(res.data) && res.data.length > 0) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(res.data));
+            return res.data;
+          }
         }
-      }, 300);
+      } catch (e) {
+        console.warn('Background Cloud save warning:', e);
+      } finally {
+        isSavingCloud = false;
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
+      return apps;
     }
 
     function getApps() {
@@ -1691,7 +1701,7 @@
     function saveApps(apps) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
       renderApps();
-      saveAppsToCloud(apps);
+      return saveAppsToCloudAsync(apps);
     }
 
     // 1. Cosmic Loader Logic (Shows Favicon, No Black Screen)
@@ -1874,7 +1884,7 @@
       renderApps();
     }
 
-    function reorderApps(sourceId, targetId) {
+    async function reorderApps(sourceId, targetId) {
       let apps = getApps();
       const sourceIndex = apps.findIndex(a => a.id === sourceId);
       const targetIndex = apps.findIndex(a => a.id === targetId);
@@ -1884,8 +1894,10 @@
       const [movedApp] = apps.splice(sourceIndex, 1);
       apps.splice(targetIndex, 0, movedApp);
 
-      saveApps(apps);
+      showCosmicLoader(movedApp.icon || 'https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังบันทึกลำดับแอป...');
+      await saveAppsToCloudAsync(apps);
       renderApps();
+      hideCosmicLoader();
     }
 
     // Edit App Name (Admin Mode)
@@ -1907,7 +1919,7 @@
       document.getElementById('editNameModal').style.display = 'none';
     }
 
-    function handleSaveEditedName(event) {
+    async function handleSaveEditedName(event) {
       event.preventDefault();
       const appId = document.getElementById('editAppId').value;
       const newName = document.getElementById('editAppNameInput').value.trim();
@@ -1915,12 +1927,19 @@
 
       let apps = getApps();
       const app = apps.find(a => a.id === appId);
-      if (app) {
-        app.name = newName;
-        saveApps(apps);
-        renderApps();
+      if (!app) {
+        closeEditNameModal();
+        return;
       }
+
+      const appIcon = app.icon || 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
       closeEditNameModal();
+      showCosmicLoader(appIcon, 'กำลังบันทึกชื่อแอป...');
+
+      app.name = newName;
+      await saveAppsToCloudAsync(apps);
+      renderApps();
+      hideCosmicLoader();
     }
 
     // 2. Render Apps Grid
@@ -2263,20 +2282,26 @@
     }
 
     // 5. Admin App Management (Toggle, Add, Delete)
-    function toggleAppActive(appId, isActive) {
+    async function toggleAppActive(appId, isActive) {
       const apps = getApps();
       const app = apps.find(a => a.id === appId);
       if (app) {
+        showCosmicLoader(app.icon || 'https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังอัปเดตสถานะแอป...');
         app.active = isActive;
-        saveApps(apps);
+        await saveAppsToCloudAsync(apps);
+        renderApps();
+        hideCosmicLoader();
       }
     }
 
-    function deleteApp(appId, appName) {
+    async function deleteApp(appId, appName) {
       if (confirm(`คุณต้องการลบ "${appName}" ออกจากศูนย์รวมแอปใช่หรือไม่?`)) {
+        showCosmicLoader('https://i.postimg.cc/0j2mFF1q/Bosu.png', `กำลังลบ "${appName}"...`);
         let apps = getApps();
         apps = apps.filter(a => a.id !== appId);
-        saveApps(apps);
+        await saveAppsToCloudAsync(apps);
+        renderApps();
+        hideCosmicLoader();
       }
     }
 
@@ -2380,15 +2405,15 @@
         active: true
       };
 
-      showCosmicLoader(icon, 'กำลังบันทึกแอปใหม่...');
+      closeAddAppModal();
+      showCosmicLoader(icon, 'กำลังบันทึกแอปใหม่ลง Cloud...');
+
       const apps = getApps();
       apps.push(newApp);
-      saveApps(apps);
 
-      setTimeout(() => {
-        hideCosmicLoader();
-        closeAddAppModal();
-      }, 400);
+      await saveAppsToCloudAsync(apps);
+      renderApps();
+      hideCosmicLoader();
     }
 
     // 6. Maintenance Notice Modal
@@ -2454,14 +2479,20 @@
       });
     }
 
-    // Initial Start: Show brief cosmic splash on load, render and sync cloud
-    document.addEventListener('DOMContentLoaded', () => {
+    // Initial Start: Show cosmic splash on load, render and sync cloud
+    document.addEventListener('DOMContentLoaded', async () => {
       showCosmicLoader('https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังเชื่อมต่อ Bosu Hub...');
       renderApps();
-      fetchAppsFromCloud();
-      setTimeout(() => {
+      try {
+        await Promise.race([
+          fetchAppsFromCloud(true),
+          new Promise(resolve => setTimeout(resolve, 1500))
+        ]);
+      } catch (e) {
+        console.warn('Initial cloud sync error:', e);
+      } finally {
         hideCosmicLoader();
-      }, 400);
+      }
     });
 
     // Background Auto-Sync: Poll new data every 5 seconds seamlessly

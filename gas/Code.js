@@ -58,12 +58,21 @@ function getOrCreateDatabaseSpreadsheet() {
     sheet = ss.getActiveSheet();
     sheet.setName("Apps");
     sheet.clear();
-    sheet.appendRow(["id", "name", "url", "icon", "active", "order", "updated_at"]);
     
-    // Seed default apps
-    DEFAULT_APPS.forEach((app, idx) => {
-      sheet.appendRow([app.id, app.name, app.url, app.icon, app.active, idx + 1, new Date().toISOString()]);
-    });
+    // Header + Default Apps in single setValues call
+    const initialRows = [
+      ["id", "name", "url", "icon", "active", "order", "updated_at"],
+      ...DEFAULT_APPS.map((app, idx) => [
+        app.id,
+        app.name,
+        app.url,
+        app.icon,
+        app.active,
+        idx + 1,
+        new Date().toISOString()
+      ])
+    ];
+    sheet.getRange(1, 1, initialRows.length, 7).setValues(initialRows);
   }
 
   return ss;
@@ -84,14 +93,20 @@ function initBosuDatabase() {
   };
 }
 
-// 3. Read All Apps from Sheet
+// 3. Read All Apps from Sheet (Lock protected)
 function getAppsFromSheet() {
+  const lock = LockService.getScriptLock();
+  let hasLock = false;
   try {
+    // Wait up to 10 seconds for any ongoing write operation to finish completely
+    hasLock = lock.tryLock(10000);
     const ss = getOrCreateDatabaseSpreadsheet();
     const sheet = ss.getSheetByName("Apps");
+    if (!sheet) return DEFAULT_APPS;
+
     const data = sheet.getDataRange().getValues();
-    
-    if (data.length <= 1) {
+    if (!data || data.length <= 1) {
+      // If table has only header or is empty
       return DEFAULT_APPS;
     }
 
@@ -106,7 +121,7 @@ function getAppsFromSheet() {
     const apps = [];
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
-      if (!row[idIdx] && !row[urlIdx]) continue;
+      if (!row || (!row[idIdx] && !row[urlIdx])) continue;
       
       apps.push({
         id: String(row[idIdx] || ('app-' + i)),
@@ -121,42 +136,57 @@ function getAppsFromSheet() {
     apps.sort((a, b) => a.order - b.order);
     return apps.length > 0 ? apps : DEFAULT_APPS;
   } catch (err) {
+    Logger.log("getAppsFromSheet error: " + err);
     return DEFAULT_APPS;
+  } finally {
+    if (hasLock) {
+      try { lock.releaseLock(); } catch (e) {}
+    }
   }
 }
 
-// 4. Save/Sync Apps to Sheet
+// 4. Save/Sync Apps to Sheet (Atomic & Lock protected)
 function saveAppsToSheet(apps) {
-  if (!Array.isArray(apps)) return { success: false, error: "Invalid data" };
+  if (!Array.isArray(apps) || apps.length === 0) {
+    return { success: false, error: "Invalid or empty apps list" };
+  }
   
   const lock = LockService.getScriptLock();
   try {
-    lock.waitLock(10000);
+    lock.waitLock(15000);
     const ss = getOrCreateDatabaseSpreadsheet();
-    const sheet = ss.getSheetByName("Apps");
+    const sheet = ss.getSheetByName("Apps") || ss.getActiveSheet();
     
-    sheet.clearContents();
-    sheet.appendRow(["id", "name", "url", "icon", "active", "order", "updated_at"]);
+    const existingLastRow = sheet.getLastRow();
 
-    const rows = apps.map((app, idx) => [
-      app.id || ('app-' + (idx + 1)),
-      app.name || '',
-      app.url || '',
-      app.icon || '',
-      app.active !== false,
-      idx + 1,
-      new Date().toISOString()
-    ]);
+    // Prepare full matrix with header
+    const rows = [
+      ["id", "name", "url", "icon", "active", "order", "updated_at"],
+      ...apps.map((app, idx) => [
+        app.id || ('app-' + (idx + 1)),
+        app.name || '',
+        app.url || '',
+        app.icon || '',
+        app.active !== false,
+        idx + 1,
+        new Date().toISOString()
+      ])
+    ];
 
-    if (rows.length > 0) {
-      sheet.getRange(2, 1, rows.length, 7).setValues(rows);
+    // ATOMIC WRITE: Overwrite existing range directly without clearContents()
+    sheet.getRange(1, 1, rows.length, 7).setValues(rows);
+
+    // If previously there were more rows, clear excess rows below
+    if (existingLastRow > rows.length) {
+      sheet.getRange(rows.length + 1, 1, existingLastRow - rows.length, sheet.getLastColumn() || 7).clearContent();
     }
 
-    return { success: true, count: rows.length };
+    SpreadsheetApp.flush();
+    return { success: true, count: apps.length };
   } catch (e) {
     return { success: false, error: e.toString() };
   } finally {
-    lock.releaseLock();
+    try { lock.releaseLock(); } catch (e) {}
   }
 }
 
@@ -165,7 +195,8 @@ function doGet(e) {
   const apps = getAppsFromSheet();
   return ContentService.createTextOutput(JSON.stringify({
     status: "success",
-    data: apps
+    data: apps,
+    timestamp: Date.now()
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -181,11 +212,19 @@ function doPost(e) {
 
     if (action === "saveApps") {
       const result = saveAppsToSheet(body.apps || []);
+      if (!result.success) {
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "error",
+          message: result.error || "Save failed"
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+
       const updatedApps = getAppsFromSheet();
       return ContentService.createTextOutput(JSON.stringify({
-        status: result.success ? "success" : "error",
-        message: result.error || "Saved successfully",
-        data: updatedApps
+        status: "success",
+        message: "Saved successfully",
+        data: updatedApps,
+        timestamp: Date.now()
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
@@ -193,7 +232,8 @@ function doPost(e) {
     const apps = getAppsFromSheet();
     return ContentService.createTextOutput(JSON.stringify({
       status: "success",
-      data: apps
+      data: apps,
+      timestamp: Date.now()
     })).setMimeType(ContentService.MimeType.JSON);
 
   } catch (err) {

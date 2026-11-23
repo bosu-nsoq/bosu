@@ -358,6 +358,152 @@
       color: #38BDF8;
       border: 1px solid rgba(56, 189, 248, 0.35);
     }
+    .icon-reorder-bg {
+      background: rgba(168, 85, 247, 0.22);
+      color: #C084FC;
+      border: 1px solid rgba(168, 85, 247, 0.35);
+    }
+
+    /* Reorder Mode Banner */
+    .reorder-banner {
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 24px;
+      background: rgba(168, 85, 247, 0.14);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      border-radius: 18px;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 20px rgba(168, 85, 247, 0.2);
+      animation: searchSlide 0.25s ease;
+    }
+    .reorder-banner-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #F3E8FF;
+    }
+    .reorder-banner-info i {
+      font-size: 1.15rem;
+      color: #C084FC;
+    }
+    .btn-reorder-done {
+      background: linear-gradient(135deg, #A855F7, #6366F1);
+      color: #FFF;
+      border: none;
+      border-radius: 12px;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
+    }
+    .btn-reorder-done:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
+    }
+
+    /* Draggable App Card in Reorder Mode */
+    .app-card.reorder-mode-card {
+      cursor: grab;
+      position: relative;
+      border-color: rgba(168, 85, 247, 0.4);
+      background: rgba(15, 23, 42, 0.85);
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+    .app-card.reorder-mode-card:hover {
+      border-color: #A855F7;
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.3);
+    }
+    .app-card.reorder-mode-card:active {
+      cursor: grabbing;
+    }
+    .app-card.is-dragging {
+      opacity: 0.45;
+      transform: scale(0.96);
+      border-color: #A855F7 !important;
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.6) !important;
+    }
+    .app-card.drag-over {
+      border-color: var(--accent-cyan) !important;
+      transform: scale(1.04);
+      box-shadow: 0 0 30px rgba(56, 189, 248, 0.6) !important;
+      background: rgba(30, 41, 59, 0.95) !important;
+    }
+    .drag-handle-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(168, 85, 247, 0.22);
+      color: #C084FC;
+      border: 1px solid rgba(168, 85, 247, 0.45);
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem;
+      cursor: grab;
+      transition: all 0.2s ease;
+    }
+    .app-card:hover .drag-handle-badge {
+      background: rgba(168, 85, 247, 0.4);
+      color: #FFF;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+    }
+    .reorder-arrow-btns {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(168, 85, 247, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+    }
+    .btn-arrow-move {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: #E2E8F0;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-size: 0.9rem;
+    }
+    .btn-arrow-move:hover:not(:disabled) {
+      background: rgba(168, 85, 247, 0.35);
+      color: #FFF;
+      border-color: #A855F7;
+      transform: scale(1.1);
+    }
+    .btn-arrow-move:disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+    }
+    .reorder-pos-text {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #C084FC;
+      letter-spacing: 0.2px;
+    }
 
     /* Cosmic Search Bar */
     .cosmic-search-container {
@@ -1183,6 +1329,12 @@
           </div>
           <span>ค้นหา</span>
         </button>
+        <button class="settings-item-btn" id="btnToggleReorder" onclick="toggleReorderMode(); toggleSettingsMenu(false);" title="จัดเรียงแอป">
+          <div class="settings-item-icon icon-reorder-bg">
+            <i class="bi bi-arrows-move"></i>
+          </div>
+          <span id="reorderMenuText">จัดเรียงแอป</span>
+        </button>
       </div>
     </div>
   </header>
@@ -1194,6 +1346,17 @@
       <i class="bi bi-search" style="color: var(--accent-cyan); font-size: 1.1rem;"></i>
       <input type="text" id="searchInput" class="cosmic-search-input" placeholder="ค้นหาชื่อแอป..." oninput="handleSearchInput(this.value)">
       <button class="btn-search-close" onclick="closeSearchBar()" title="ปิดการค้นหา">&times;</button>
+    </div>
+
+    <!-- Reorder Mode Banner -->
+    <div class="reorder-banner" id="reorderBanner" style="display: none;">
+      <div class="reorder-banner-info">
+        <i class="bi bi-arrows-move"></i>
+        <span>โหมดจัดเรียง: แตะหรือคลิกลากเพื่อสลับตำแหน่งแอป</span>
+      </div>
+      <button class="btn-reorder-done" onclick="toggleReorderMode(false)">
+        <i class="bi bi-check-lg"></i> เสร็จสิ้น
+      </button>
     </div>
 
     <section class="apps-grid" id="appsGrid">
@@ -1524,8 +1687,15 @@
       }
     }
 
-    // Search & Settings State
+    // Search & Settings & Reorder State
     let searchQuery = '';
+    let isReorderMode = false;
+    let draggedAppId = null;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchActiveCard = null;
+    let touchActiveId = null;
+    let isDraggingTouch = false;
 
     function toggleSettingsMenu(forceState) {
       const menu = document.getElementById('settingsMenu');
@@ -1553,6 +1723,7 @@
       const searchContainer = document.getElementById('cosmicSearchContainer');
       const searchInput = document.getElementById('searchInput');
       if (searchContainer.style.display === 'none' || !searchContainer.style.display) {
+        if (isReorderMode) toggleReorderMode(false);
         searchContainer.style.display = 'flex';
         searchInput.focus();
       } else {
@@ -1571,6 +1742,57 @@
 
     function handleSearchInput(value) {
       searchQuery = value.toLowerCase().trim();
+      renderApps();
+    }
+
+    function toggleReorderMode(forceState) {
+      if (typeof forceState === 'boolean') {
+        isReorderMode = forceState;
+      } else {
+        isReorderMode = !isReorderMode;
+      }
+
+      if (isReorderMode) {
+        closeSearchBar();
+      }
+
+      const banner = document.getElementById('reorderBanner');
+      const menuText = document.getElementById('reorderMenuText');
+      if (banner) {
+        banner.style.display = isReorderMode ? 'flex' : 'none';
+      }
+      if (menuText) {
+        menuText.textContent = isReorderMode ? 'ปิดจัดเรียง' : 'จัดเรียงแอป';
+      }
+
+      renderApps();
+    }
+
+    function reorderApps(sourceId, targetId) {
+      let apps = getApps();
+      const sourceIndex = apps.findIndex(a => a.id === sourceId);
+      const targetIndex = apps.findIndex(a => a.id === targetId);
+
+      if (sourceIndex === -1 || targetIndex === -1 || sourceIndex === targetIndex) return;
+
+      const [movedApp] = apps.splice(sourceIndex, 1);
+      apps.splice(targetIndex, 0, movedApp);
+
+      saveApps(apps);
+      renderApps();
+    }
+
+    function moveAppIndex(appId, delta) {
+      let apps = getApps();
+      const currentIndex = apps.findIndex(a => a.id === appId);
+      if (currentIndex === -1) return;
+      const newIndex = currentIndex + delta;
+      if (newIndex < 0 || newIndex >= apps.length) return;
+
+      const [movedApp] = apps.splice(currentIndex, 1);
+      apps.splice(newIndex, 0, movedApp);
+
+      saveApps(apps);
       renderApps();
     }
 
@@ -1595,16 +1817,104 @@
         return;
       }
 
-      apps.forEach(app => {
+      apps.forEach((app, index) => {
         const isMaintenance = !app.active;
         const card = document.createElement('div');
-        card.className = `app-card ${isMaintenance ? 'is-maintenance' : ''}`;
+        card.className = `app-card ${isMaintenance ? 'is-maintenance' : ''} ${isReorderMode ? 'reorder-mode-card' : ''}`;
+        card.dataset.id = app.id;
+        card.dataset.index = index;
         
         const appIcon = app.icon || getFaviconFromUrl(app.url);
 
+        // Reorder Handlers (Desktop Mouse & Mobile Touch)
+        if (isReorderMode) {
+          card.setAttribute('draggable', 'true');
+
+          // Desktop Drag events
+          card.addEventListener('dragstart', (e) => {
+            draggedAppId = app.id;
+            card.classList.add('is-dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', app.id);
+          });
+
+          card.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            if (draggedAppId && draggedAppId !== app.id) {
+              card.classList.add('drag-over');
+            }
+          });
+
+          card.addEventListener('dragleave', () => {
+            card.classList.remove('drag-over');
+          });
+
+          card.addEventListener('drop', (e) => {
+            e.preventDefault();
+            card.classList.remove('drag-over');
+            const sourceId = e.dataTransfer.getData('text/plain') || draggedAppId;
+            if (sourceId && sourceId !== app.id) {
+              reorderApps(sourceId, app.id);
+            }
+          });
+
+          card.addEventListener('dragend', () => {
+            card.classList.remove('is-dragging');
+            document.querySelectorAll('.app-card').forEach(c => c.classList.remove('drag-over'));
+            draggedAppId = null;
+          });
+
+          // Mobile Touch events
+          card.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.btn-arrow-move') || e.target.closest('.admin-controls-panel')) return;
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            touchActiveCard = card;
+            touchActiveId = app.id;
+            isDraggingTouch = false;
+          }, { passive: true });
+
+          card.addEventListener('touchmove', (e) => {
+            if (!touchActiveCard) return;
+            const touch = e.touches[0];
+            const deltaX = Math.abs(touch.clientX - touchStartX);
+            const deltaY = Math.abs(touch.clientY - touchStartY);
+            if (deltaX > 8 || deltaY > 8) {
+              isDraggingTouch = true;
+              if (e.cancelable) e.preventDefault();
+              touchActiveCard.classList.add('is-dragging');
+              const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+              const targetCard = elem ? elem.closest('.app-card') : null;
+              document.querySelectorAll('.app-card').forEach(c => c.classList.remove('drag-over'));
+              if (targetCard && targetCard !== touchActiveCard) {
+                targetCard.classList.add('drag-over');
+              }
+            }
+          }, { passive: false });
+
+          card.addEventListener('touchend', (e) => {
+            if (touchActiveCard && isDraggingTouch) {
+              const touch = e.changedTouches[0];
+              const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+              const targetCard = elem ? elem.closest('.app-card') : null;
+              if (targetCard && targetCard.dataset.id && targetCard.dataset.id !== touchActiveId) {
+                reorderApps(touchActiveId, targetCard.dataset.id);
+              }
+            }
+            document.querySelectorAll('.app-card').forEach(c => {
+              c.classList.remove('is-dragging', 'drag-over');
+            });
+            touchActiveCard = null;
+            touchActiveId = null;
+            isDraggingTouch = false;
+          });
+        }
+
         // Card click handler
         card.onclick = (e) => {
-          // If clicked on switch or delete button in admin mode, don't launch app
+          if (isReorderMode) return;
           if (e.target.closest('.admin-controls-panel')) return;
           
           if (isMaintenance && currentRole === 'guest') {
@@ -1615,7 +1925,7 @@
         };
 
         let adminControlsHtml = '';
-        if (currentRole === 'admin') {
+        if (currentRole === 'admin' && !isReorderMode) {
           adminControlsHtml = `
             <div class="admin-controls-panel" onclick="event.stopPropagation()">
               <label class="switch-wrap" title="สวิตช์เปิด/ปิดแอป">
@@ -1632,16 +1942,36 @@
           `;
         }
 
-        const maintenancePillHtml = isMaintenance 
+        const maintenancePillHtml = (isMaintenance && !isReorderMode)
           ? `<div class="maintenance-pill"><i class="bi bi-cone-striped"></i> กำลังปรับปรุงระบบ</div>`
           : '';
 
+        const dragHandleHtml = isReorderMode
+          ? `<div class="drag-handle-badge" title="ลากเพื่อจัดเรียง"><i class="bi bi-grip-vertical"></i></div>`
+          : '';
+
+        const reorderArrowsHtml = isReorderMode
+          ? `
+            <div class="reorder-arrow-btns" onclick="event.stopPropagation()">
+              <button class="btn-arrow-move" onclick="moveAppIndex('${app.id}', -1)" title="ย้ายไปข้างหน้า" ${index === 0 ? 'disabled' : ''}>
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <span class="reorder-pos-text">ลำดับ ${index + 1}</span>
+              <button class="btn-arrow-move" onclick="moveAppIndex('${app.id}', 1)" title="ย้ายไปข้างหลัง" ${index === apps.length - 1 ? 'disabled' : ''}>
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          `
+          : '';
+
         card.innerHTML = `
+          ${dragHandleHtml}
           <div class="app-icon-wrap">
             <img src="${appIcon}" alt="${app.name}" class="app-icon-img" onerror="handleIconError(this, '${app.url}')">
           </div>
           <h2 class="app-title">${app.name}</h2>
           ${maintenancePillHtml}
+          ${reorderArrowsHtml}
           ${adminControlsHtml}
         `;
 
@@ -1743,6 +2073,7 @@
         if (btnSettings) btnSettings.style.display = 'none';
         toggleSettingsMenu(false);
         closeSearchBar();
+        toggleReorderMode(false);
       }
       renderApps();
     }

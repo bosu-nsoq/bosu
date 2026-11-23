@@ -464,46 +464,6 @@
       color: #FFF;
       box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
     }
-    .reorder-arrow-btns {
-      margin-top: 12px;
-      padding-top: 10px;
-      border-top: 1px dashed rgba(168, 85, 247, 0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      width: 100%;
-    }
-    .btn-arrow-move {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      color: #E2E8F0;
-      width: 32px;
-      height: 32px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      font-size: 0.9rem;
-    }
-    .btn-arrow-move:hover:not(:disabled) {
-      background: rgba(168, 85, 247, 0.35);
-      color: #FFF;
-      border-color: #A855F7;
-      transform: scale(1.1);
-    }
-    .btn-arrow-move:disabled {
-      opacity: 0.25;
-      cursor: not-allowed;
-    }
-    .reorder-pos-text {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: #C084FC;
-      letter-spacing: 0.2px;
-    }
 
     /* Cosmic Search Bar */
     .cosmic-search-container {
@@ -664,31 +624,31 @@
 
     /* App Icon */
     .app-icon-wrap {
-      width: 86px;
-      height: 86px;
-      border-radius: 24px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      background: transparent;
+      border: none;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
-      padding: 10px;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 14px;
+      box-shadow: none;
+      padding: 2px;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
       position: relative;
     }
     .app-card:hover .app-icon-wrap {
-      transform: scale(1.08);
-      box-shadow: 0 0 25px rgba(99, 102, 241, 0.45);
-      border-color: rgba(99, 102, 241, 0.5);
+      transform: scale(1.12);
+      filter: drop-shadow(0 0 18px rgba(99, 102, 241, 0.55));
     }
 
     .app-icon-img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      border-radius: 14px;
+      border-radius: 16px;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
     }
 
     /* App Title */
@@ -700,9 +660,42 @@
       letter-spacing: 0.2px;
       transition: color 0.2s ease;
       margin-bottom: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      max-width: 100%;
+    }
+    .app-title span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .app-card:hover .app-title {
       color: var(--accent-cyan);
+    }
+
+    /* Admin Pencil Button for Editing App Name */
+    .btn-edit-title {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: #38BDF8;
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    .btn-edit-title:hover {
+      background: rgba(56, 189, 248, 0.25);
+      border-color: #38BDF8;
+      color: #FFF;
+      transform: scale(1.15);
     }
 
     /* Admin Card Controls (Switch & Delete) */
@@ -1251,9 +1244,10 @@
         width: 100%;
       }
       .app-icon-wrap {
-        width: 72px;
-        height: 72px;
-        margin-bottom: 10px;
+        width: 64px;
+        height: 64px;
+        margin-bottom: 8px;
+        padding: 0;
       }
       .settings-menu {
         top: 60px;
@@ -1515,6 +1509,29 @@
         <div class="ios-step-num">3</div>
         <div>กด <strong>"เพิ่ม" (Add)</strong> ที่มุมขวาบน จะได้ไอคอนแอป Bosu บนหน้าจอพร้อมเปิดเต็มจอทันที</div>
       </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       EDIT APP NAME MODAL (Admin Only)
+       ============================================================ -->
+  <div class="cosmic-modal-overlay" id="editNameModal" onclick="closeEditNameModal(event)">
+    <div class="cosmic-modal-card" style="max-width: 420px;" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="bi bi-pencil-square" style="color: var(--accent-cyan);"></i> แก้ไขชื่อแอป</h3>
+        <button class="modal-close" onclick="closeEditNameModal()">&times;</button>
+      </div>
+      <form id="editNameForm" onsubmit="handleSaveEditedName(event)">
+        <input type="hidden" id="editAppId">
+        <div class="form-group">
+          <label class="form-label">ชื่อแอปใหม่</label>
+          <input type="text" id="editAppNameInput" class="form-input" placeholder="กรอกชื่อแอป..." required autocomplete="off">
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 22px;">
+          <button type="button" class="btn-cancel" onclick="closeEditNameModal()" style="flex: 1; padding: 11px; border-radius: 14px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.16); color: #FFF; font-weight: 600; cursor: pointer;">ยกเลิก</button>
+          <button type="submit" class="btn-submit" style="flex: 1.5; padding: 11px; border-radius: 14px; background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan)); border: none; color: #FFF; font-weight: 700; cursor: pointer;">บันทึกชื่อ</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -1782,18 +1799,39 @@
       renderApps();
     }
 
-    function moveAppIndex(appId, delta) {
+    // Edit App Name (Admin Mode)
+    function openEditNameModal(appId, event) {
+      if (event) event.stopPropagation();
+      const apps = getApps();
+      const app = apps.find(a => a.id === appId);
+      if (!app) return;
+
+      document.getElementById('editAppId').value = appId;
+      const input = document.getElementById('editAppNameInput');
+      input.value = app.name;
+      document.getElementById('editNameModal').style.display = 'flex';
+      setTimeout(() => input.focus(), 60);
+    }
+
+    function closeEditNameModal(event) {
+      if (event && event.target !== event.currentTarget) return;
+      document.getElementById('editNameModal').style.display = 'none';
+    }
+
+    function handleSaveEditedName(event) {
+      event.preventDefault();
+      const appId = document.getElementById('editAppId').value;
+      const newName = document.getElementById('editAppNameInput').value.trim();
+      if (!newName) return;
+
       let apps = getApps();
-      const currentIndex = apps.findIndex(a => a.id === appId);
-      if (currentIndex === -1) return;
-      const newIndex = currentIndex + delta;
-      if (newIndex < 0 || newIndex >= apps.length) return;
-
-      const [movedApp] = apps.splice(currentIndex, 1);
-      apps.splice(newIndex, 0, movedApp);
-
-      saveApps(apps);
-      renderApps();
+      const app = apps.find(a => a.id === appId);
+      if (app) {
+        app.name = newName;
+        saveApps(apps);
+        renderApps();
+      }
+      closeEditNameModal();
     }
 
     // 2. Render Apps Grid
@@ -1867,7 +1905,7 @@
 
           // Mobile Touch events
           card.addEventListener('touchstart', (e) => {
-            if (e.target.closest('.btn-arrow-move') || e.target.closest('.admin-controls-panel')) return;
+            if (e.target.closest('.btn-edit-title') || e.target.closest('.admin-controls-panel')) return;
             const touch = e.touches[0];
             touchStartX = touch.clientX;
             touchStartY = touch.clientY;
@@ -1950,28 +1988,25 @@
           ? `<div class="drag-handle-badge" title="ลากเพื่อจัดเรียง"><i class="bi bi-grip-vertical"></i></div>`
           : '';
 
-        const reorderArrowsHtml = isReorderMode
-          ? `
-            <div class="reorder-arrow-btns" onclick="event.stopPropagation()">
-              <button class="btn-arrow-move" onclick="moveAppIndex('${app.id}', -1)" title="ย้ายไปข้างหน้า" ${index === 0 ? 'disabled' : ''}>
-                <i class="bi bi-chevron-left"></i>
-              </button>
-              <span class="reorder-pos-text">ลำดับ ${index + 1}</span>
-              <button class="btn-arrow-move" onclick="moveAppIndex('${app.id}', 1)" title="ย้ายไปข้างหลัง" ${index === apps.length - 1 ? 'disabled' : ''}>
-                <i class="bi bi-chevron-right"></i>
-              </button>
-            </div>
-          `
-          : '';
+        let editNameBtnHtml = '';
+        if (currentRole === 'admin' && !isReorderMode) {
+          editNameBtnHtml = `
+            <button class="btn-edit-title" onclick="openEditNameModal('${app.id}', event)" title="แก้ไขชื่อแอป">
+              <i class="bi bi-pencil-fill"></i>
+            </button>
+          `;
+        }
 
         card.innerHTML = `
           ${dragHandleHtml}
           <div class="app-icon-wrap">
             <img src="${appIcon}" alt="${app.name}" class="app-icon-img" onerror="handleIconError(this, '${app.url}')">
           </div>
-          <h2 class="app-title">${app.name}</h2>
+          <h2 class="app-title">
+            <span>${app.name}</span>
+            ${editNameBtnHtml}
+          </h2>
           ${maintenancePillHtml}
-          ${reorderArrowsHtml}
           ${adminControlsHtml}
         `;
 

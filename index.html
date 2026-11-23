@@ -11,9 +11,9 @@
   
   <!-- PWA & Apple Mobile Web App Tags -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#FFFFFF">
+  <meta name="theme-color" content="#090D16">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Bosu">
   <link rel="apple-touch-icon" href="https://i.postimg.cc/0j2mFF1q/Bosu.png">
   <meta name="mobile-web-app-capable" content="yes">
@@ -28,14 +28,23 @@
 
   <style>
     :root {
-      --bg-space: #FFFFFF;
-      --bg-card: #FFFFFF;
-      --text-main: #0F172A;
-      --text-sub: #475569;
-      --orbit-line: rgba(148, 163, 184, 0.22);
-      --border-card: #E2E8F0;
-      --shadow-card: 0 4px 20px rgba(15, 23, 42, 0.05);
-      --shadow-hover: 0 12px 30px rgba(99, 102, 241, 0.12);
+      --bg-space: #070A13;
+      --bg-space-dark: #04060B;
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --bg-card-hover: rgba(30, 41, 59, 0.9);
+      --text-main: #F8FAFC;
+      --text-sub: #94A3B8;
+      --text-muted: #64748B;
+      --primary: #6366F1;
+      --primary-glow: rgba(99, 102, 241, 0.35);
+      --accent-cyan: #38BDF8;
+      --accent-gold: #F59E0B;
+      --danger: #EF4444;
+      --border-space: rgba(148, 163, 184, 0.16);
+      --border-hover: rgba(99, 102, 241, 0.45);
+      --orbit-line: rgba(148, 163, 184, 0.12);
+      --shadow-cosmic: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+      --shadow-hover: 0 16px 40px -8px rgba(99, 102, 241, 0.35);
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
@@ -61,7 +70,7 @@
     }
 
     /* ============================================================
-       SOLAR SYSTEM / COSMOS BACKGROUND (White & Clean)
+       COSMOS & SOLAR SYSTEM DARK THEME BACKGROUND
        ============================================================ */
     .space-background {
       position: fixed;
@@ -73,10 +82,33 @@
       z-index: 0;
       overflow: hidden;
       background: 
-        radial-gradient(circle at 50% 25%, rgba(241, 245, 249, 0.9) 0%, rgba(255, 255, 255, 1) 75%);
+        radial-gradient(ellipse at 50% 20%, rgba(30, 27, 75, 0.6) 0%, rgba(7, 10, 19, 0.95) 70%, #030509 100%);
     }
 
-    /* Orbital Rings */
+    /* Ambient Nebula Glow */
+    .nebula {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      opacity: 0.28;
+    }
+    .nebula-1 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, #4F46E5 0%, transparent 70%);
+      top: -100px;
+      left: 20%;
+    }
+    .nebula-2 {
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, #0284C7 0%, transparent 70%);
+      bottom: -100px;
+      right: 15%;
+    }
+
+    /* Planetary Orbit Rings */
     .orbit-ring {
       position: absolute;
       border-radius: 50%;
@@ -86,29 +118,53 @@
       transform: translate(-50%, -50%);
       pointer-events: none;
     }
-    .orbit-1 { width: 380px; height: 380px; animation: rotateOrbit 90s linear infinite; }
-    .orbit-2 { width: 680px; height: 680px; animation: rotateOrbit 160s linear infinite reverse; }
-    .orbit-3 { width: 1020px; height: 1020px; animation: rotateOrbit 240s linear infinite; }
+    .orbit-1 { width: 340px; height: 340px; animation: rotateOrbit 70s linear infinite; }
+    .orbit-2 { width: 640px; height: 640px; animation: rotateOrbit 130s linear infinite reverse; }
+    .orbit-3 { width: 980px; height: 980px; animation: rotateOrbit 210s linear infinite; }
 
-    /* Celestial Planet Dot on Orbit */
-    .planet-dot {
+    /* Orbiting Celestial Planets */
+    .planet {
       position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .planet-gold {
       width: 10px;
       height: 10px;
-      border-radius: 50%;
-      background: #818CF8;
-      box-shadow: 0 0 10px rgba(129, 140, 248, 0.6);
+      background: #FBBF24;
+      box-shadow: 0 0 14px #F59E0B;
       top: 0;
       left: 50%;
       transform: translate(-50%, -50%);
     }
-    .planet-dot-2 {
+    .planet-cyan {
       width: 8px;
       height: 8px;
       background: #38BDF8;
-      box-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+      box-shadow: 0 0 12px #0EA5E9;
       bottom: 0;
-      top: auto;
+      left: 50%;
+      transform: translate(-50%, 50%);
+    }
+    .planet-saturn {
+      width: 12px;
+      height: 12px;
+      background: #A78BFA;
+      box-shadow: 0 0 16px #8B5CF6;
+      top: 50%;
+      right: 0;
+      transform: translate(50%, -50%);
+    }
+    .planet-saturn::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 5px;
+      border: 1.5px solid rgba(196, 181, 253, 0.75);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-25deg);
     }
 
     @keyframes rotateOrbit {
@@ -116,29 +172,31 @@
       to { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
-    /* Subtle Stars */
-    .star {
+    /* Twinkling Stars */
+    .star-twinkle {
       position: absolute;
-      width: 3px;
-      height: 3px;
-      background: #94A3B8;
+      background: #FFF;
       border-radius: 50%;
-      opacity: 0.35;
+      animation: twinkle 3s ease-in-out infinite alternate;
+    }
+    @keyframes twinkle {
+      0% { opacity: 0.15; transform: scale(0.8); }
+      100% { opacity: 0.85; transform: scale(1.2); }
     }
 
     /* ============================================================
-       TOP HEADER (Clean, Minimal, Single line on mobile)
+       TOP HEADER (Single-line on mobile portrait)
        ============================================================ */
     .app-header {
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(7, 10, 19, 0.85);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border-card);
+      border-bottom: 1px solid var(--border-space);
       position: sticky;
       top: 0;
       z-index: 50;
       height: 64px;
-      padding: 0 20px;
+      padding: 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -147,105 +205,152 @@
     .header-left {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       white-space: nowrap;
     }
 
     .app-brand-logo {
-      width: 40px;
-      height: 40px;
+      width: 38px;
+      height: 38px;
       border-radius: 12px;
       object-fit: cover;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
       flex-shrink: 0;
-      background: #FFF;
-      border: 1px solid var(--border-card);
+      background: #0F172A;
+      border: 1px solid rgba(255, 255, 255, 0.12);
     }
 
     .brand-title {
       font-size: 1.35rem;
       font-weight: 700;
-      color: var(--text-main);
+      color: #FFF;
       letter-spacing: 0.5px;
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.25);
       white-space: nowrap;
     }
 
     .header-right {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       white-space: nowrap;
     }
 
-    .btn-install {
+    /* Mode Badge & Buttons */
+    .role-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: #0F172A;
-      color: #FFF;
-      border: none;
-      padding: 6px 14px;
+      gap: 4px;
+    }
+    .badge-guest {
+      background: rgba(148, 163, 184, 0.15);
+      color: #94A3B8;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+    .badge-admin {
+      background: rgba(245, 158, 11, 0.2);
+      color: #FBBF24;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+    }
+
+    .btn-header-action {
+      background: rgba(255, 255, 255, 0.08);
+      color: #F8FAFC;
+      border: 1px solid var(--border-space);
+      padding: 6px 12px;
       border-radius: 20px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
       transition: all 0.2s ease;
       white-space: nowrap;
     }
+    .btn-header-action:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
 
-    .btn-install:hover {
-      background: #334155;
+    .btn-admin-add {
+      background: linear-gradient(135deg, #4F46E5, #06B6D4);
+      color: #FFF;
+      border: none;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+    }
+    .btn-admin-add:hover {
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.6);
       transform: translateY(-1px);
     }
 
+    .btn-install {
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFF;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
     /* ============================================================
-       MAIN CONTENT CONTAINER
+       MAIN CONTAINER & APPS GRID
        ============================================================ */
     .main-container {
       position: relative;
       z-index: 10;
-      max-width: 900px;
+      max-width: 960px;
       width: 100%;
       margin: 0 auto;
-      padding: 40px 20px 60px;
+      padding: 36px 16px 60px;
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
     }
 
-    /* App Launcher Grid - Focused on Name & Icon */
     .apps-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 24px;
       width: 100%;
-      max-width: 800px;
       margin: auto 0;
     }
 
+    /* APP CARD (Focus on Name & Icon) */
     .app-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid var(--border-card);
+      background: var(--bg-card);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border-space);
       border-radius: 24px;
-      padding: 32px 20px;
+      padding: 30px 20px 24px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       text-align: center;
       cursor: pointer;
-      box-shadow: var(--shadow-card);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: var(--shadow-cosmic);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
       overflow: hidden;
       user-select: none;
     }
 
+    /* Card celestial hover glow */
     .app-card::before {
       content: '';
       position: absolute;
@@ -253,45 +358,65 @@
       left: -50%;
       width: 200%;
       height: 200%;
-      background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 60%);
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 60%);
       opacity: 0;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.35s ease;
       pointer-events: none;
     }
 
     .app-card:hover {
       transform: translateY(-6px) scale(1.02);
-      border-color: #CBD5E1;
+      border-color: var(--border-hover);
       box-shadow: var(--shadow-hover);
+      background: var(--bg-card-hover);
     }
-
     .app-card:hover::before {
       opacity: 1;
     }
-
     .app-card:active {
       transform: scale(0.98);
     }
 
-    /* Prominent App Icon */
+    /* Maintenance Mode on Card */
+    .app-card.is-maintenance {
+      opacity: 0.72;
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+    .app-card.is-maintenance::after {
+      content: 'กำลังปรับปรุงระบบ';
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(245, 158, 11, 0.2);
+      color: #FBBF24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    /* App Icon */
     .app-icon-wrap {
-      width: 88px;
-      height: 88px;
+      width: 86px;
+      height: 86px;
       border-radius: 24px;
-      background: #FFFFFF;
-      border: 1px solid var(--border-card);
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 18px;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+      margin-bottom: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
       padding: 10px;
-      transition: transform 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
     }
-
     .app-card:hover .app-icon-wrap {
       transform: scale(1.08);
-      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+      box-shadow: 0 0 25px rgba(99, 102, 241, 0.45);
+      border-color: rgba(99, 102, 241, 0.5);
     }
 
     .app-icon-img {
@@ -301,22 +426,190 @@
       border-radius: 14px;
     }
 
-    /* App Name */
+    /* App Title */
     .app-title {
       font-size: 1.15rem;
       font-weight: 700;
-      color: var(--text-main);
+      color: #FFF;
       line-height: 1.3;
       letter-spacing: 0.2px;
       transition: color 0.2s ease;
+      margin-bottom: 6px;
+    }
+    .app-card:hover .app-title {
+      color: var(--accent-cyan);
     }
 
-    .app-card:hover .app-title {
-      color: #4361EE;
+    /* Admin Card Controls (Switch & Delete) */
+    .admin-controls-panel {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    /* Switch Style */
+    .switch-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      color: var(--text-sub);
+      cursor: pointer;
+    }
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 38px;
+      height: 22px;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #334155;
+      transition: .3s;
+      border-radius: 34px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background: linear-gradient(135deg, #10B981, #059669);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    }
+    input:checked + .slider:before {
+      transform: translateX(16px);
+    }
+
+    .btn-card-del {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #F87171;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+    .btn-card-del:hover {
+      background: rgba(239, 68, 68, 0.35);
+      color: #FFF;
     }
 
     /* ============================================================
-       IN-APP FULLSCREEN WEB APP VIEWER (Clean Solar/Universe Theme)
+       COSMIC FULLSCREEN LOADING SCREEN (Favicon & Pulse Animation)
+       ============================================================ */
+    .cosmic-loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at center, #0F172A 0%, #04060B 100%);
+      z-index: 100000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .cosmic-loader-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .cosmic-loader-portal {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    /* Rotating Celestial Rings around Favicon */
+    .loader-ring-1 {
+      position: absolute;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 2px dashed rgba(99, 102, 241, 0.65);
+      animation: spinClockwise 4s linear infinite;
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.25);
+    }
+    .loader-ring-2 {
+      position: absolute;
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      border-top-color: #38BDF8;
+      border-bottom-color: #A78BFA;
+      animation: spinCounter 2s linear infinite;
+    }
+
+    @keyframes spinClockwise {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes spinCounter {
+      to { transform: rotate(-360deg); }
+    }
+
+    .loader-icon-center {
+      width: 58px;
+      height: 58px;
+      border-radius: 16px;
+      object-fit: contain;
+      box-shadow: 0 0 25px rgba(99, 102, 241, 0.7);
+      animation: pulseGlow 1.8s ease-in-out infinite alternate;
+      background: #0B0F19;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 6px;
+    }
+    @keyframes pulseGlow {
+      0% { transform: scale(0.92); box-shadow: 0 0 15px rgba(99, 102, 241, 0.4); }
+      100% { transform: scale(1.08); box-shadow: 0 0 35px rgba(56, 189, 248, 0.8); }
+    }
+
+    .cosmic-loader-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #E2E8F0;
+      letter-spacing: 0.5px;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ============================================================
+       IN-APP FULLSCREEN WEB APP VIEWER (No URL Bar, Cosmic Theme)
        ============================================================ */
     .inapp-viewer {
       position: fixed;
@@ -326,32 +619,33 @@
       bottom: 0;
       width: 100vw;
       height: 100vh;
-      background: #FFFFFF;
+      background: #070A13; /* Never a black void, cosmic tone! */
       z-index: 9999;
       display: none;
       flex-direction: column;
       transform: translateY(100%);
-      transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
-
     .inapp-viewer.active {
       display: flex;
       transform: translateY(0);
     }
 
     .viewer-navbar {
-      background: #FFFFFF;
+      background: rgba(11, 15, 25, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       color: var(--text-main);
       height: 56px;
-      padding: 0 16px;
+      padding: 0 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid var(--border-card);
+      border-bottom: 1px solid var(--border-space);
       flex-shrink: 0;
       padding-top: var(--safe-top);
       box-sizing: content-box;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
 
     .viewer-nav-left {
@@ -365,9 +659,9 @@
 
     /* Back button: Only "Bosu" */
     .btn-viewer-back {
-      background: #F1F5F9;
-      border: 1px solid var(--border-card);
-      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #FFF;
       padding: 6px 14px;
       border-radius: 20px;
       font-size: 0.9rem;
@@ -379,9 +673,8 @@
       transition: all 0.2s ease;
       white-space: nowrap;
     }
-
     .btn-viewer-back:hover {
-      background: #E2E8F0;
+      background: rgba(255, 255, 255, 0.2);
       transform: translateX(-2px);
     }
 
@@ -399,9 +692,9 @@
       height: 28px;
       border-radius: 8px;
       object-fit: cover;
-      background: #FFF;
+      background: #0F172A;
       flex-shrink: 0;
-      border: 1px solid var(--border-card);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .viewer-app-title {
@@ -410,7 +703,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      color: var(--text-main);
+      color: #FFF;
     }
 
     .viewer-nav-right {
@@ -421,9 +714,9 @@
     }
 
     .viewer-tool-btn {
-      background: #F1F5F9;
-      border: 1px solid var(--border-card);
-      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-space);
+      color: #FFF;
       width: 36px;
       height: 36px;
       border-radius: 50%;
@@ -434,9 +727,8 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
-
     .viewer-tool-btn:hover {
-      background: #E2E8F0;
+      background: rgba(255, 255, 255, 0.2);
     }
 
     .viewer-iframe-wrapper {
@@ -444,7 +736,7 @@
       position: relative;
       width: 100%;
       height: 100%;
-      background: #FFFFFF;
+      background: #070A13;
       overflow: hidden;
     }
 
@@ -453,101 +745,196 @@
       height: 100%;
       border: none;
       display: block;
+      background: transparent;
     }
 
-    .iframe-loader {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      color: var(--text-sub);
-      font-weight: 500;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .spinner {
-      width: 38px;
-      height: 38px;
-      border: 3px solid rgba(15, 23, 42, 0.1);
-      border-top-color: #0F172A;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* iOS Modal Guide */
-    .ios-modal-overlay {
+    /* ============================================================
+       MODALS (PIN Login, Add App, Maintenance Alert)
+       ============================================================ */
+    .cosmic-modal-overlay {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(3, 5, 10, 0.75);
       z-index: 10000;
       display: none;
-      align-items: flex-end;
+      align-items: center;
       justify-content: center;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(8px);
+      padding: 16px;
     }
 
-    .ios-modal-card {
-      background: #FFF;
+    .cosmic-modal-card {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--border-space);
       width: 100%;
-      max-width: 500px;
-      border-radius: 24px 24px 0 0;
-      padding: 24px 20px 32px;
-      box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.15);
-      animation: slideUp 0.3s ease;
+      max-width: 400px;
+      border-radius: 24px;
+      padding: 26px 24px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+      animation: modalScale 0.25s ease;
+      position: relative;
+    }
+    @keyframes modalScale {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
 
-    @keyframes slideUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
-    }
-
-    .ios-modal-header {
+    .modal-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
-
-    .ios-modal-title {
-      font-size: 1.15rem;
+    .modal-title {
+      font-size: 1.2rem;
       font-weight: 700;
-      color: var(--text-main);
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-
-    .ios-modal-close {
-      background: none;
+    .modal-close {
+      background: transparent;
       border: none;
-      font-size: 1.4rem;
       color: var(--text-sub);
+      font-size: 1.4rem;
       cursor: pointer;
     }
 
+    /* PIN Inputs */
+    .pin-display-group {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 20px 0 24px;
+    }
+    .pin-box {
+      width: 52px;
+      height: 58px;
+      border-radius: 16px;
+      border: 1.5px solid var(--border-space);
+      background: rgba(2, 6, 23, 0.6);
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #FFF;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .pin-box:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .pin-keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      max-width: 270px;
+      margin: 0 auto;
+    }
+    .key-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-space);
+      color: #FFF;
+      height: 52px;
+      border-radius: 16px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .key-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+    .key-btn:active {
+      transform: scale(0.94);
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .form-input {
+      width: 100%;
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid var(--border-space);
+      background: rgba(2, 6, 23, 0.6);
+      padding: 0 14px;
+      color: #FFF;
+      font-size: 0.92rem;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .form-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 12px var(--primary-glow);
+    }
+
+    .btn-submit-action {
+      width: 100%;
+      height: 46px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #4F46E5, #06B6D4);
+      border: none;
+      color: #FFF;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+      transition: all 0.2s ease;
+      margin-top: 10px;
+    }
+    .btn-submit-action:hover {
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+      transform: translateY(-1px);
+    }
+
+    /* Shake animation on wrong PIN */
+    .shake-error {
+      animation: shake 0.4s ease-in-out;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+
+    /* iOS Modal Guide */
+    .ios-modal-card {
+      background: #0F172A;
+      color: #FFF;
+      border: 1px solid var(--border-space);
+    }
     .ios-step {
       display: flex;
       align-items: center;
       gap: 14px;
       padding: 12px 0;
-      border-bottom: 1px solid var(--border-card);
+      border-bottom: 1px solid var(--border-space);
       font-size: 0.95rem;
     }
-
     .ios-step-num {
       width: 32px;
       height: 32px;
-      background: #EEF2FF;
-      color: #4361EE;
+      background: rgba(99, 102, 241, 0.25);
+      color: #818CF8;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -559,11 +946,11 @@
     @media (max-width: 640px) {
       .apps-grid {
         grid-template-columns: 1fr;
-        max-width: 320px;
+        max-width: 330px;
         gap: 18px;
       }
       .app-card {
-        padding: 24px 16px;
+        padding: 24px 18px;
       }
       .app-icon-wrap {
         width: 76px;
@@ -571,82 +958,93 @@
         margin-bottom: 12px;
       }
       .main-container {
-        padding: 24px 16px;
+        padding: 24px 14px;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Solar System / Cosmos White Ambient Background -->
+  <!-- COSMOS & SOLAR SYSTEM DARK THEME BACKGROUND -->
   <div class="space-background">
+    <div class="nebula nebula-1"></div>
+    <div class="nebula nebula-2"></div>
+    
+    <!-- Orbital Rings & Planets -->
     <div class="orbit-ring orbit-1">
-      <div class="planet-dot"></div>
+      <div class="planet planet-gold"></div>
     </div>
     <div class="orbit-ring orbit-2">
-      <div class="planet-dot planet-dot-2"></div>
+      <div class="planet planet-cyan"></div>
+      <div class="planet planet-saturn"></div>
     </div>
     <div class="orbit-ring orbit-3"></div>
-    <div class="star" style="top: 15%; left: 20%;"></div>
-    <div class="star" style="top: 25%; left: 80%;"></div>
-    <div class="star" style="top: 65%; left: 15%;"></div>
-    <div class="star" style="top: 75%; left: 85%;"></div>
-    <div class="star" style="top: 40%; left: 90%;"></div>
+
+    <!-- Twinkling Stars -->
+    <div class="star-twinkle" style="width: 2px; height: 2px; top: 12%; left: 18%; animation-delay: 0s;"></div>
+    <div class="star-twinkle" style="width: 3px; height: 3px; top: 22%; left: 78%; animation-delay: 1.2s;"></div>
+    <div class="star-twinkle" style="width: 2px; height: 2px; top: 62%; left: 12%; animation-delay: 0.5s;"></div>
+    <div class="star-twinkle" style="width: 3px; height: 3px; top: 82%; left: 88%; animation-delay: 1.8s;"></div>
+    <div class="star-twinkle" style="width: 4px; height: 4px; top: 38%; left: 92%; animation-delay: 2.2s;"></div>
+    <div class="star-twinkle" style="width: 2px; height: 2px; top: 75%; left: 45%; animation-delay: 0.8s;"></div>
   </div>
 
-  <!-- Header Navigation -->
+  <!-- HEADER NAVIGATION (Single Line on Mobile) -->
   <header class="app-header">
     <div class="header-left">
       <img src="https://i.postimg.cc/0j2mFF1q/Bosu.png" alt="Bosu Logo" class="app-brand-logo">
       <span class="brand-title">Bosu</span>
+      <span id="roleIndicator" class="role-badge badge-guest">Guest</span>
     </div>
     
     <div class="header-right">
+      <!-- Admin Add App Button (Visible only to Admin) -->
+      <button class="btn-header-action btn-admin-add" id="btnAddApp" style="display: none;" onclick="openAddAppModal()">
+        <i class="bi bi-plus-lg"></i>
+        <span>เพิ่มแอป</span>
+      </button>
+
+      <!-- Admin Login / Logout Button -->
+      <button class="btn-header-action" id="btnAdminAuth" onclick="handleAuthClick()">
+        <i class="bi bi-shield-lock"></i>
+        <span id="authBtnText">Admin</span>
+      </button>
+
+      <!-- PWA Install Button -->
       <button class="btn-install" id="btnInstallApp" style="display: none;" onclick="handleInstallClick()">
         <i class="bi bi-download"></i>
-        <span>ติดตั้งแอป</span>
       </button>
     </div>
   </header>
 
-  <!-- Main Content: Clean App Launcher Grid (Focused on Name & Icon) -->
+  <!-- MAIN CONTENT: APPS GRID -->
   <main class="main-container">
     <section class="apps-grid" id="appsGrid">
-      
-      <!-- App 1: WNTK Library System -->
-      <div class="app-card" onclick="launchInApp('https://bosu-nsoq.github.io/wntk-library-system/', 'WNTK Library System', 'https://i.postimg.cc/D0Dw84J1/WNTK.png')">
-        <div class="app-icon-wrap">
-          <img src="https://i.postimg.cc/D0Dw84J1/WNTK.png" alt="WNTK Library System" class="app-icon-img">
-        </div>
-        <h2 class="app-title">WNTK Library System</h2>
-      </div>
-
-      <!-- App 2: Financial -->
-      <div class="app-card" onclick="launchInApp('https://bosu-nsoq.github.io/financial/', 'Financial', 'https://i.postimg.cc/T2Cngdnd/Financial.png')">
-        <div class="app-icon-wrap">
-          <img src="https://i.postimg.cc/T2Cngdnd/Financial.png" alt="Financial" class="app-icon-img">
-        </div>
-        <h2 class="app-title">Financial</h2>
-      </div>
-
-      <!-- App 3: Lunar -->
-      <div class="app-card" onclick="launchInApp('https://bosu-nsoq.github.io/lunar/', 'Lunar', 'https://i.postimg.cc/xC1sKNwZ/Lunar.png')">
-        <div class="app-icon-wrap">
-          <img src="https://i.postimg.cc/xC1sKNwZ/Lunar.png" alt="Lunar" class="app-icon-img">
-        </div>
-        <h2 class="app-title">Lunar</h2>
-      </div>
-
+      <!-- Generated dynamically by JavaScript -->
     </section>
   </main>
 
   <!-- ============================================================
-       IN-APP FULLSCREEN WEB APP VIEWER (No URL Bar, Clean Theme)
+       COSMIC FULLSCREEN LOADING SCREEN (Favicon & Pulse Animation)
+       ============================================================ -->
+  <div class="cosmic-loader-overlay" id="cosmicLoader">
+    <div class="cosmic-loader-portal">
+      <div class="loader-ring-1"></div>
+      <div class="loader-ring-2"></div>
+      <img src="https://i.postimg.cc/0j2mFF1q/Bosu.png" alt="Loading" id="loaderIcon" class="loader-icon-center">
+    </div>
+    <div class="cosmic-loader-text" id="loaderText">
+      <span>กำลังเข้าสู่ระบบ...</span>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       IN-APP FULLSCREEN WEB APP VIEWER (No URL Bar)
        ============================================================ -->
   <div class="inapp-viewer" id="inAppViewer">
     <div class="viewer-navbar">
       <div class="viewer-nav-left">
-        <!-- Back button text changed to only "Bosu" -->
+        <!-- Back button: Only "Bosu" -->
         <button class="btn-viewer-back" onclick="closeInAppViewer()">
           <i class="bi bi-chevron-left"></i>
           <span>Bosu</span>
@@ -657,7 +1055,6 @@
         </div>
       </div>
       
-      <!-- Only reload button retained (no fullscreen, no external link) -->
       <div class="viewer-nav-right">
         <button class="viewer-tool-btn" onclick="reloadIframe()" title="รีเฟรช">
           <i class="bi bi-arrow-clockwise"></i>
@@ -666,19 +1063,96 @@
     </div>
 
     <div class="viewer-iframe-wrapper">
-      <div class="iframe-loader" id="iframeLoader">
-        <div class="spinner"></div>
-      </div>
       <iframe id="appIframe" class="viewer-iframe" allow="camera; microphone; geolocation; clipboard-read; clipboard-write; fullscreen"></iframe>
     </div>
   </div>
 
+  <!-- ============================================================
+       PIN LOGIN MODAL (Admin Authentication)
+       ============================================================ -->
+  <div class="cosmic-modal-overlay" id="pinModal">
+    <div class="cosmic-modal-card" id="pinCard">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="bi bi-shield-lock" style="color: var(--accent-gold);"></i> เข้าสู่ระบบ Admin</h3>
+        <button class="modal-close" onclick="closePinModal()">&times;</button>
+      </div>
+      <p style="font-size: 0.88rem; color: var(--text-sub); text-align: center;">กรอกรหัส PIN 4 หลักสำหรับผู้ดูแลระบบ</p>
+      
+      <!-- 4 PIN Boxes -->
+      <div class="pin-display-group">
+        <input type="password" maxlength="1" class="pin-box" id="pin1" readonly>
+        <input type="password" maxlength="1" class="pin-box" id="pin2" readonly>
+        <input type="password" maxlength="1" class="pin-box" id="pin3" readonly>
+        <input type="password" maxlength="1" class="pin-box" id="pin4" readonly>
+      </div>
+
+      <!-- Numeric Keypad -->
+      <div class="pin-keypad">
+        <button class="key-btn" onclick="enterPinDigit('1')">1</button>
+        <button class="key-btn" onclick="enterPinDigit('2')">2</button>
+        <button class="key-btn" onclick="enterPinDigit('3')">3</button>
+        <button class="key-btn" onclick="enterPinDigit('4')">4</button>
+        <button class="key-btn" onclick="enterPinDigit('5')">5</button>
+        <button class="key-btn" onclick="enterPinDigit('6')">6</button>
+        <button class="key-btn" onclick="enterPinDigit('7')">7</button>
+        <button class="key-btn" onclick="enterPinDigit('8')">8</button>
+        <button class="key-btn" onclick="enterPinDigit('9')">9</button>
+        <button class="key-btn" onclick="clearPin()"><i class="bi bi-x-lg"></i></button>
+        <button class="key-btn" onclick="enterPinDigit('0')">0</button>
+        <button class="key-btn" onclick="backspacePin()"><i class="bi bi-backspace"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ADD APP MODAL (Admin Only)
+       ============================================================ -->
+  <div class="cosmic-modal-overlay" id="addAppModal">
+    <div class="cosmic-modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="bi bi-plus-circle" style="color: var(--accent-cyan);"></i> เพิ่มเว็บแอปใหม่</h3>
+        <button class="modal-close" onclick="closeAddAppModal()">&times;</button>
+      </div>
+      <form id="addAppForm" onsubmit="handleSaveNewApp(event)">
+        <div class="form-group">
+          <label class="form-label">ชื่อแอป</label>
+          <input type="text" id="newAppName" class="form-input" placeholder="เช่น ระบบจัดการคลังสินค้า" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">ลิงก์ URL ปลายทาง</label>
+          <input type="url" id="newAppUrl" class="form-input" placeholder="https://..." required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">ลิงก์ไอคอนแอป (Favicon / Icon URL)</label>
+          <input type="url" id="newAppIcon" class="form-input" placeholder="https://..." required>
+        </div>
+        <button type="submit" class="btn-submit-action">บันทึกและเพิ่มแอป</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MAINTENANCE NOTICE MODAL
+       ============================================================ -->
+  <div class="cosmic-modal-overlay" id="maintenanceModal">
+    <div class="cosmic-modal-card" style="text-align: center;">
+      <div style="font-size: 3rem; color: var(--accent-gold); margin-bottom: 12px;">
+        <i class="bi bi-cone-striped"></i>
+      </div>
+      <h3 style="font-size: 1.25rem; font-weight: 700; color: #FFF; margin-bottom: 8px;">กำลังปรับปรุงระบบ</h3>
+      <p style="font-size: 0.95rem; color: var(--text-sub); line-height: 1.5; margin-bottom: 24px;">
+        เว็บแอปนี้กำลังอยู่ระหว่างการปรับปรุงระบบชั่วคราว ขออภัยในความไม่สะดวกครับ
+      </p>
+      <button class="btn-submit-action" onclick="closeMaintenanceModal()">เข้าใจแล้ว</button>
+    </div>
+  </div>
+
   <!-- iOS Add to Home Screen Instructions Modal -->
-  <div class="ios-modal-overlay" id="iosModal" onclick="closeIosModal(event)">
-    <div class="ios-modal-card" onclick="event.stopPropagation()">
-      <div class="ios-modal-header">
-        <h3 class="ios-modal-title"><i class="bi bi-apple"></i> วิธีติดตั้งบน iPhone / iPad</h3>
-        <button class="ios-modal-close" onclick="closeIosModal()">&times;</button>
+  <div class="cosmic-modal-overlay" id="iosModal" onclick="closeIosModal(event)">
+    <div class="cosmic-modal-card ios-modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="bi bi-apple"></i> วิธีติดตั้งบน iPhone / iPad</h3>
+        <button class="modal-close" onclick="closeIosModal()">&times;</button>
       </div>
       <div class="ios-step">
         <div class="ios-step-num">1</div>
@@ -695,30 +1169,146 @@
     </div>
   </div>
 
-  <!-- JavaScript Application Logic -->
+  <!-- ============================================================
+       JAVASCRIPT APPLICATION LOGIC
+       ============================================================ -->
   <script>
-    // In-App Fullscreen Web App Viewer (No URL Bar displayed)
+    // Default Base Apps
+    const DEFAULT_APPS = [
+      {
+        id: 'wntk-library-system',
+        name: 'WNTK Library System',
+        url: 'https://bosu-nsoq.github.io/wntk-library-system/',
+        icon: 'https://i.postimg.cc/D0Dw84J1/WNTK.png',
+        active: true
+      },
+      {
+        id: 'financial',
+        name: 'Financial',
+        url: 'https://bosu-nsoq.github.io/financial/',
+        icon: 'https://i.postimg.cc/T2Cngdnd/Financial.png',
+        active: true
+      },
+      {
+        id: 'lunar',
+        name: 'Lunar',
+        url: 'https://bosu-nsoq.github.io/lunar/',
+        icon: 'https://i.postimg.cc/xC1sKNwZ/Lunar.png',
+        active: true
+      }
+    ];
+
+    // Admin PIN (Default: 1234)
+    const ADMIN_PIN = '1234';
+    let currentRole = 'guest'; // 'guest' | 'admin'
+    let enteredPin = '';
     let currentAppUrl = '';
 
+    // Storage Key
+    const STORAGE_KEY = 'bosu_hub_apps_v2';
+
+    function getApps() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) return JSON.parse(stored);
+      } catch (e) {
+        console.error('Error reading storage', e);
+      }
+      return DEFAULT_APPS;
+    }
+
+    function saveApps(apps) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
+      renderApps();
+    }
+
+    // 1. Cosmic Loader Logic (Shows Favicon, No Black Screen)
+    function showCosmicLoader(iconSrc, text = 'กำลังโหลดระบบ...') {
+      const loader = document.getElementById('cosmicLoader');
+      const loaderIcon = document.getElementById('loaderIcon');
+      const loaderText = document.getElementById('loaderText');
+      if (loaderIcon) loaderIcon.src = iconSrc || 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
+      if (loaderText) loaderText.textContent = text;
+      loader.classList.add('active');
+    }
+
+    function hideCosmicLoader() {
+      const loader = document.getElementById('cosmicLoader');
+      loader.classList.remove('active');
+    }
+
+    // 2. Render Apps Grid
+    function renderApps() {
+      const grid = document.getElementById('appsGrid');
+      const apps = getApps();
+      grid.innerHTML = '';
+
+      apps.forEach(app => {
+        const isMaintenance = !app.active;
+        const card = document.createElement('div');
+        card.className = `app-card ${isMaintenance ? 'is-maintenance' : ''}`;
+        
+        // Card click handler
+        card.onclick = (e) => {
+          // If clicked on switch or delete button in admin mode, don't launch app
+          if (e.target.closest('.admin-controls-panel')) return;
+          
+          if (isMaintenance && currentRole === 'guest') {
+            openMaintenanceModal();
+            return;
+          }
+          launchInApp(app.url, app.name, app.icon);
+        };
+
+        let adminControlsHtml = '';
+        if (currentRole === 'admin') {
+          adminControlsHtml = `
+            <div class="admin-controls-panel" onclick="event.stopPropagation()">
+              <label class="switch-wrap" title="สวิตช์เปิด/ปิดแอป">
+                <div class="toggle-switch">
+                  <input type="checkbox" ${app.active ? 'checked' : ''} onchange="toggleAppActive('${app.id}', this.checked)">
+                  <span class="slider"></span>
+                </div>
+                <span>${app.active ? 'เปิดอยู่' : 'ปิดปรับปรุง'}</span>
+              </label>
+              <button class="btn-card-del" onclick="deleteApp('${app.id}', '${app.name}')" title="ลบแอป">
+                <i class="bi bi-trash3"></i>
+              </button>
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div class="app-icon-wrap">
+            <img src="${app.icon}" alt="${app.name}" class="app-icon-img" onerror="this.src='https://i.postimg.cc/0j2mFF1q/Bosu.png'">
+          </div>
+          <h2 class="app-title">${app.name}</h2>
+          ${adminControlsHtml}
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    // 3. In-App Fullscreen Web App Viewer (No URL Bar displayed)
     function launchInApp(url, title, iconSrc) {
       currentAppUrl = url;
       const viewer = document.getElementById('inAppViewer');
       const iframe = document.getElementById('appIframe');
       const viewerTitle = document.getElementById('viewerTitle');
       const viewerIcon = document.getElementById('viewerIcon');
-      const loader = document.getElementById('iframeLoader');
 
       viewerTitle.textContent = title;
       viewerIcon.src = iconSrc;
       viewerIcon.alt = title;
 
-      // Show loader and set iframe src
-      loader.style.opacity = '1';
-      loader.style.display = 'flex';
-      
+      // Show cosmic loader with the app's favicon/icon (No Black Screen!)
+      showCosmicLoader(iconSrc, `กำลังเข้าสู่ ${title}...`);
+
       iframe.onload = () => {
-        loader.style.opacity = '0';
-        setTimeout(() => { loader.style.display = 'none'; }, 200);
+        setTimeout(() => {
+          hideCosmicLoader();
+        }, 300);
       };
 
       iframe.src = url;
@@ -737,6 +1327,7 @@
       
       viewer.classList.remove('active');
       document.body.style.overflow = '';
+      hideCosmicLoader();
       
       setTimeout(() => {
         iframe.src = 'about:blank';
@@ -745,10 +1336,10 @@
 
     function reloadIframe() {
       const iframe = document.getElementById('appIframe');
-      const loader = document.getElementById('iframeLoader');
       if (iframe && currentAppUrl) {
-        loader.style.display = 'flex';
-        loader.style.opacity = '1';
+        const viewerIcon = document.getElementById('viewerIcon');
+        const viewerTitle = document.getElementById('viewerTitle');
+        showCosmicLoader(viewerIcon.src, `กำลังโหลด ${viewerTitle.textContent}...`);
         iframe.src = currentAppUrl;
       }
     }
@@ -761,7 +1352,160 @@
       }
     });
 
-    // PWA Installation Handling
+    // 4. Admin Auth & PIN Logic
+    function handleAuthClick() {
+      if (currentRole === 'admin') {
+        // Logout back to Guest
+        currentRole = 'guest';
+        updateRoleUI();
+      } else {
+        // Open PIN modal
+        openPinModal();
+      }
+    }
+
+    function updateRoleUI() {
+      const roleBadge = document.getElementById('roleIndicator');
+      const authBtnText = document.getElementById('authBtnText');
+      const btnAddApp = document.getElementById('btnAddApp');
+
+      if (currentRole === 'admin') {
+        roleBadge.className = 'role-badge badge-admin';
+        roleBadge.innerHTML = '<i class="bi bi-shield-check"></i> Admin';
+        authBtnText.textContent = 'ออก';
+        btnAddApp.style.display = 'inline-flex';
+      } else {
+        roleBadge.className = 'role-badge badge-guest';
+        roleBadge.textContent = 'Guest';
+        authBtnText.textContent = 'Admin';
+        btnAddApp.style.display = 'none';
+      }
+      renderApps();
+    }
+
+    function openPinModal() {
+      enteredPin = '';
+      updatePinBoxes();
+      document.getElementById('pinModal').style.display = 'flex';
+    }
+
+    function closePinModal() {
+      document.getElementById('pinModal').style.display = 'none';
+      enteredPin = '';
+      updatePinBoxes();
+    }
+
+    function enterPinDigit(digit) {
+      if (enteredPin.length < 4) {
+        enteredPin += digit;
+        updatePinBoxes();
+        if (enteredPin.length === 4) {
+          setTimeout(verifyPin, 150);
+        }
+      }
+    }
+
+    function backspacePin() {
+      if (enteredPin.length > 0) {
+        enteredPin = enteredPin.slice(0, -1);
+        updatePinBoxes();
+      }
+    }
+
+    function clearPin() {
+      enteredPin = '';
+      updatePinBoxes();
+    }
+
+    function updatePinBoxes() {
+      for (let i = 1; i <= 4; i++) {
+        const box = document.getElementById(`pin${i}`);
+        box.value = enteredPin[i - 1] ? '●' : '';
+      }
+    }
+
+    function verifyPin() {
+      if (enteredPin === ADMIN_PIN) {
+        showCosmicLoader('https://i.postimg.cc/0j2mFF1q/Bosu.png', 'เข้าสู่ระบบ Admin สำเร็จ...');
+        setTimeout(() => {
+          hideCosmicLoader();
+          currentRole = 'admin';
+          updateRoleUI();
+          closePinModal();
+        }, 500);
+      } else {
+        const card = document.getElementById('pinCard');
+        card.classList.add('shake-error');
+        setTimeout(() => {
+          card.classList.remove('shake-error');
+          clearPin();
+        }, 400);
+      }
+    }
+
+    // 5. Admin App Management (Toggle, Add, Delete)
+    function toggleAppActive(appId, isActive) {
+      const apps = getApps();
+      const app = apps.find(a => a.id === appId);
+      if (app) {
+        app.active = isActive;
+        saveApps(apps);
+      }
+    }
+
+    function deleteApp(appId, appName) {
+      if (confirm(`คุณต้องการลบ "${appName}" ออกจากศูนย์รวมแอปใช่หรือไม่?`)) {
+        let apps = getApps();
+        apps = apps.filter(a => a.id !== appId);
+        saveApps(apps);
+      }
+    }
+
+    function openAddAppModal() {
+      document.getElementById('addAppForm').reset();
+      document.getElementById('addAppModal').style.display = 'flex';
+    }
+
+    function closeAddAppModal() {
+      document.getElementById('addAppModal').style.display = 'none';
+    }
+
+    function handleSaveNewApp(e) {
+      e.preventDefault();
+      const name = document.getElementById('newAppName').value.trim();
+      const url = document.getElementById('newAppUrl').value.trim();
+      const icon = document.getElementById('newAppIcon').value.trim();
+
+      if (!name || !url || !icon) return;
+
+      const newApp = {
+        id: 'app-' + Date.now(),
+        name,
+        url,
+        icon,
+        active: true
+      };
+
+      showCosmicLoader(icon, 'กำลังบันทึกแอปใหม่...');
+      const apps = getApps();
+      apps.push(newApp);
+      saveApps(apps);
+
+      setTimeout(() => {
+        hideCosmicLoader();
+        closeAddAppModal();
+      }, 400);
+    }
+
+    // 6. Maintenance Notice Modal
+    function openMaintenanceModal() {
+      document.getElementById('maintenanceModal').style.display = 'flex';
+    }
+    function closeMaintenanceModal() {
+      document.getElementById('maintenanceModal').style.display = 'none';
+    }
+
+    // 7. PWA Installation Handling
     let deferredPrompt = null;
     const btnInstall = document.getElementById('btnInstallApp');
 
@@ -815,6 +1559,15 @@
           .catch(err => console.log('SW Error', err));
       });
     }
+
+    // Initial Start: Show brief cosmic splash on load then render
+    document.addEventListener('DOMContentLoaded', () => {
+      showCosmicLoader('https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังเชื่อมต่อ Bosu Hub...');
+      renderApps();
+      setTimeout(() => {
+        hideCosmicLoader();
+      }, 400);
+    });
   </script>
 </body>
 </html>

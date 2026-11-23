@@ -5,8 +5,8 @@
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#FFFFFF",
-  "theme_color": "#FFFFFF",
+  "background_color": "#070A13",
+  "theme_color": "#070A13",
   "icons": [
     {
       "src": "https://i.postimg.cc/0j2mFF1q/Bosu.png",

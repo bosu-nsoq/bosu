@@ -1396,14 +1396,14 @@
   <!-- ============================================================
        COSMIC FULLSCREEN LOADING SCREEN (Favicon & Pulse Animation)
        ============================================================ -->
-  <div class="cosmic-loader-overlay" id="cosmicLoader">
+  <div class="cosmic-loader-overlay active" id="cosmicLoader">
     <div class="cosmic-loader-portal">
       <div class="loader-ring-1"></div>
       <div class="loader-ring-2"></div>
       <img src="https://i.postimg.cc/0j2mFF1q/Bosu.png" alt="Loading" id="loaderIcon" class="loader-icon-center">
     </div>
     <div class="cosmic-loader-text" id="loaderText">
-      <span>กำลังเข้าสู่ระบบ...</span>
+      <span>กำลังโหลดข้อมูลและไอคอนระบบ...</span>
     </div>
   </div>
 
@@ -1632,7 +1632,12 @@
               localStorage.setItem(STORAGE_KEY, cloudJson);
               // Avoid interrupting user if they are currently dragging to reorder
               if (!isReorderMode) {
-                renderApps();
+                if (forceRender) {
+                  await preloadAllAppIcons(cloudApps);
+                  renderApps();
+                } else {
+                  preloadAllAppIcons(cloudApps).then(() => renderApps());
+                }
               }
             }
             return cloudApps;
@@ -1710,13 +1715,65 @@
       const loaderIcon = document.getElementById('loaderIcon');
       const loaderText = document.getElementById('loaderText');
       if (loaderIcon) loaderIcon.src = iconSrc || 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
-      if (loaderText) loaderText.textContent = text;
-      loader.classList.add('active');
+      if (loaderText) {
+        loaderText.innerHTML = `<span>${text}</span>`;
+      }
+      if (loader) loader.classList.add('active');
     }
 
     function hideCosmicLoader() {
       const loader = document.getElementById('cosmicLoader');
-      loader.classList.remove('active');
+      if (loader) loader.classList.remove('active');
+    }
+
+    // Favicon & Image Preloader
+    function preloadImage(url, fallbackUrl = 'https://i.postimg.cc/0j2mFF1q/Bosu.png', timeoutMs = 3500) {
+      if (!url) return Promise.resolve(fallbackUrl);
+      return new Promise((resolve) => {
+        const img = new Image();
+        let timer = null;
+        let finished = false;
+
+        const complete = (resolvedUrl) => {
+          if (finished) return;
+          finished = true;
+          if (timer) clearTimeout(timer);
+          resolve(resolvedUrl);
+        };
+
+        timer = setTimeout(() => {
+          complete(url);
+        }, timeoutMs);
+
+        img.onload = () => complete(url);
+        img.onerror = () => {
+          if (fallbackUrl && fallbackUrl !== url) {
+            const fallbackImg = new Image();
+            fallbackImg.onload = () => complete(fallbackUrl);
+            fallbackImg.onerror = () => complete('https://i.postimg.cc/0j2mFF1q/Bosu.png');
+            fallbackImg.src = fallbackUrl;
+          } else {
+            complete('https://i.postimg.cc/0j2mFF1q/Bosu.png');
+          }
+        };
+        img.src = url;
+      });
+    }
+
+    async function preloadAllAppIcons(apps) {
+      if (!Array.isArray(apps) || apps.length === 0) return;
+      const promises = apps.map(async (app) => {
+        const domain = getDomainFromUrl(app.url);
+        const fallback = domain && !domain.includes('github.io')
+          ? `https://www.google.com/s2/favicons?domain=${domain}&sz=128`
+          : 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
+        const validIcon = await preloadImage(app.icon, fallback);
+        if (validIcon && app.icon !== validIcon && validIcon !== 'https://i.postimg.cc/0j2mFF1q/Bosu.png') {
+          app.icon = validIcon;
+        }
+      });
+      promises.push(preloadImage('https://i.postimg.cc/0j2mFF1q/Bosu.png'));
+      await Promise.allSettled(promises);
     }
 
     // Favicon Auto-Detection Helpers
@@ -1938,6 +1995,7 @@
 
       app.name = newName;
       await saveAppsToCloudAsync(apps);
+      await preloadImage(appIcon);
       renderApps();
       hideCosmicLoader();
     }
@@ -2137,10 +2195,22 @@
       // Show cosmic loader with the app's favicon/icon (No Black Screen!)
       showCosmicLoader(iconSrc, `กำลังเข้าสู่ ${title}...`);
 
-      iframe.onload = () => {
-        setTimeout(() => {
+      let hasLoaded = false;
+      const safetyTimer = setTimeout(() => {
+        if (!hasLoaded) {
+          hasLoaded = true;
           hideCosmicLoader();
-        }, 300);
+        }
+      }, 8000);
+
+      iframe.onload = () => {
+        if (!hasLoaded) {
+          hasLoaded = true;
+          clearTimeout(safetyTimer);
+          setTimeout(() => {
+            hideCosmicLoader();
+          }, 300);
+        }
       };
 
       iframe.src = url;
@@ -2412,6 +2482,7 @@
       apps.push(newApp);
 
       await saveAppsToCloudAsync(apps);
+      await preloadImage(newApp.icon);
       renderApps();
       hideCosmicLoader();
     }
@@ -2479,20 +2550,43 @@
       });
     }
 
-    // Initial Start: Show cosmic splash on load, render and sync cloud
+    // Initial Start: Show cosmic splash on load, load cloud data & pre-cache all favicons before displaying
     document.addEventListener('DOMContentLoaded', async () => {
-      showCosmicLoader('https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังเชื่อมต่อ Bosu Hub...');
-      renderApps();
+      showCosmicLoader('https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังโหลดข้อมูลและไอคอนระบบ...');
+
+      // 1. Fetch latest data from Cloud (or fallback to local if offline)
       try {
         await Promise.race([
-          fetchAppsFromCloud(true),
-          new Promise(resolve => setTimeout(resolve, 1500))
+          fetchAppsFromCloud(false),
+          new Promise(resolve => setTimeout(resolve, 2000))
         ]);
       } catch (e) {
         console.warn('Initial cloud sync error:', e);
-      } finally {
-        hideCosmicLoader();
       }
+
+      // 2. Preload all app favicons so every icon is ready in browser cache
+      const currentApps = getApps();
+      const loaderText = document.getElementById('loaderText');
+      if (loaderText) {
+        loaderText.innerHTML = '<span>กำลังโหลดไอคอนแอป (Favicon)...</span>';
+      }
+
+      try {
+        await Promise.race([
+          preloadAllAppIcons(currentApps),
+          new Promise(resolve => setTimeout(resolve, 2500))
+        ]);
+      } catch (e) {
+        console.warn('Favicon preload error:', e);
+      }
+
+      // 3. Render the grid with preloaded apps and favicons
+      renderApps();
+
+      // 4. Smoothly fade out the loader and reveal the current screen
+      setTimeout(() => {
+        hideCosmicLoader();
+      }, 250);
     });
 
     // Background Auto-Sync: Poll new data every 5 seconds seamlessly

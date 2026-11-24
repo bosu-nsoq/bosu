@@ -1403,7 +1403,7 @@
       <img src="https://i.postimg.cc/0j2mFF1q/Bosu.png" alt="Loading" id="loaderIcon" class="loader-icon-center">
     </div>
     <div class="cosmic-loader-text" id="loaderText">
-      <span>กำลังโหลดข้อมูลและไอคอนระบบ...</span>
+      <span>กำลังโหลดข้อมูล</span>
     </div>
   </div>
 
@@ -1714,13 +1714,13 @@
     }
 
     // 1. Cosmic Loader Logic (Shows Favicon, No Black Screen)
-    function showCosmicLoader(iconSrc, text = 'กำลังโหลดระบบ...') {
+    function showCosmicLoader(iconSrc, text = 'กำลังโหลดข้อมูล') {
       const loader = document.getElementById('cosmicLoader');
       const loaderIcon = document.getElementById('loaderIcon');
       const loaderText = document.getElementById('loaderText');
       if (loaderIcon) loaderIcon.src = iconSrc || 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
       if (loaderText) {
-        loaderText.innerHTML = `<span>${text}</span>`;
+        loaderText.innerHTML = `<span>กำลังโหลดข้อมูล</span>`;
       }
       if (loader) loader.classList.add('active');
     }
@@ -1955,7 +1955,7 @@
       const [movedApp] = apps.splice(sourceIndex, 1);
       apps.splice(targetIndex, 0, movedApp);
 
-      showCosmicLoader(movedApp.icon || 'https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังบันทึกลำดับแอป...');
+      showCosmicLoader(movedApp.icon || 'https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังโหลดข้อมูล');
       await saveAppsToCloudAsync(apps);
       renderApps();
       hideCosmicLoader();
@@ -1995,7 +1995,7 @@
 
       const appIcon = app.icon || 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
       closeEditNameModal();
-      showCosmicLoader(appIcon, 'กำลังบันทึกชื่อแอป...');
+      showCosmicLoader(appIcon, 'กำลังโหลดข้อมูล');
 
       app.name = newName;
       await saveAppsToCloudAsync(apps);
@@ -2197,7 +2197,7 @@
       viewerIcon.alt = title;
 
       // Show cosmic loader with the app's favicon/icon (No Black Screen!)
-      showCosmicLoader(iconSrc, `กำลังเข้าสู่ ${title}...`);
+      showCosmicLoader(iconSrc, 'กำลังโหลดข้อมูล');
 
       let hasLoaded = false;
       const safetyTimer = setTimeout(() => {
@@ -2245,8 +2245,7 @@
       const iframe = document.getElementById('appIframe');
       if (iframe && currentAppUrl) {
         const viewerIcon = document.getElementById('viewerIcon');
-        const viewerTitle = document.getElementById('viewerTitle');
-        showCosmicLoader(viewerIcon.src, `กำลังโหลด ${viewerTitle.textContent}...`);
+        showCosmicLoader(viewerIcon.src, 'กำลังโหลดข้อมูล');
         iframe.src = currentAppUrl;
       }
     }
@@ -2408,7 +2407,7 @@
       const apps = getApps();
       const app = apps.find(a => a.id === appId);
       if (app) {
-        showCosmicLoader(app.icon || 'https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังอัปเดตสถานะแอป...');
+        showCosmicLoader(app.icon || 'https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังโหลดข้อมูล');
         app.active = isActive;
         await saveAppsToCloudAsync(apps);
         renderApps();
@@ -2418,7 +2417,7 @@
 
     async function deleteApp(appId, appName) {
       if (confirm(`คุณต้องการลบ "${appName}" ออกจากศูนย์รวมแอปใช่หรือไม่?`)) {
-        showCosmicLoader('https://i.postimg.cc/0j2mFF1q/Bosu.png', `กำลังลบ "${appName}"...`);
+        showCosmicLoader('https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังโหลดข้อมูล');
         let apps = getApps();
         apps = apps.filter(a => a.id !== appId);
         await saveAppsToCloudAsync(apps);
@@ -2528,7 +2527,7 @@
       };
 
       closeAddAppModal();
-      showCosmicLoader(icon, 'กำลังบันทึกแอปใหม่ลง Cloud...');
+      showCosmicLoader(icon, 'กำลังโหลดข้อมูล');
 
       const apps = getApps();
       apps.push(newApp);
@@ -2604,7 +2603,7 @@
 
     // Initial Start: Show cosmic splash on load, load cloud data & pre-cache all favicons before displaying
     document.addEventListener('DOMContentLoaded', async () => {
-      showCosmicLoader('https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังโหลดข้อมูลและไอคอนระบบ...');
+      showCosmicLoader('https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังโหลดข้อมูล');
 
       // 1. Fetch latest data from Cloud (or fallback to local if offline)
       try {
@@ -2618,10 +2617,6 @@
 
       // 2. Preload all app favicons so every icon is ready in browser cache
       const currentApps = getApps();
-      const loaderText = document.getElementById('loaderText');
-      if (loaderText) {
-        loaderText.innerHTML = '<span>กำลังโหลดไอคอนแอป (Favicon)...</span>';
-      }
 
       try {
         await Promise.race([

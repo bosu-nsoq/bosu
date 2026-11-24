@@ -1261,14 +1261,18 @@
         gap: 14px;
       }
       .app-card {
-        padding: 20px 14px;
+        padding: 14px 12px;
+        border-radius: 20px;
         width: 100%;
       }
       .app-icon-wrap {
-        width: 64px;
-        height: 64px;
-        margin-bottom: 8px;
+        width: 52px;
+        height: 52px;
+        margin-bottom: 6px;
         padding: 0;
+      }
+      .app-icon-img {
+        border-radius: 13px;
       }
       .settings-menu {
         top: 60px;
@@ -2597,7 +2601,7 @@
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=17')
+        navigator.serviceWorker.register('./sw.js?v=18')
           .then(reg => {
             reg.update();
             console.log('Bosu PWA Registered', reg);

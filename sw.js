@@ -1,5 +1,5 @@
 // Service Worker for Bosu Web App Hub
-const CACHE_NAME = 'bosu-hub-cache-v12';
+const CACHE_NAME = 'bosu-hub-cache-v13';
 const STATIC_ASSETS = [
   './',
   './index.html',

@@ -1423,6 +1423,10 @@
           <span id="viewerTitle" class="viewer-app-title">Web App</span>
         </div>
       </div>
+      <div class="viewer-nav-right">
+        <button class="viewer-tool-btn" onclick="reloadIframe()" title="รีเฟรชหน้าเว็บ"><i class="bi bi-arrow-clockwise"></i></button>
+        <button class="viewer-tool-btn" onclick="openCurrentAppInBrowser()" title="เปิดในเบราว์เซอร์"><i class="bi bi-box-arrow-up-right"></i></button>
+      </div>
     </div>
 
     <div class="viewer-iframe-wrapper">
@@ -2204,6 +2208,7 @@
       }, 8000);
 
       iframe.onload = () => {
+        attachIframeLineBridge(iframe);
         if (!hasLoaded) {
           hasLoaded = true;
           clearTimeout(safetyTimer);
@@ -2245,6 +2250,53 @@
         iframe.src = currentAppUrl;
       }
     }
+
+    function openCurrentAppInBrowser() {
+      if (currentAppUrl) {
+        window.open(currentAppUrl, '_blank');
+      }
+    }
+
+    // Bridge for sub-apps inside iframe to trigger native LINE app opening
+    function attachIframeLineBridge(iframe) {
+      try {
+        const cw = iframe.contentWindow;
+        const cd = iframe.contentDocument;
+        if (!cw) return;
+
+        // 1. Hook sendToLineApp if sub-app defines it
+        if (typeof cw.sendToLineApp === 'function' && !cw.__bosuLineHooked) {
+          cw.__bosuLineHooked = true;
+          cw.sendToLineApp = function(msg) {
+            const encoded = encodeURIComponent(msg);
+            const lineUrl = "https://line.me/R/msg/text/?" + encoded;
+            window.top.location.href = lineUrl;
+          };
+        }
+
+        // 2. Intercept click events on line.me or line:// links/buttons
+        if (cd && !cd.__bosuClickHooked) {
+          cd.__bosuClickHooked = true;
+          cd.addEventListener('click', (e) => {
+            const anchor = e.target.closest('a');
+            if (anchor && anchor.href && (anchor.href.includes('line.me') || anchor.href.startsWith('line://'))) {
+              e.preventDefault();
+              e.stopPropagation();
+              window.top.location.href = anchor.href;
+            }
+          }, true);
+        }
+      } catch (err) {
+        // Cross-origin restriction
+      }
+    }
+
+    // Listen to postMessage from sub-apps requesting LINE opening
+    window.addEventListener('message', (event) => {
+      if (event.data && (event.data.type === 'BOSU_OPEN_LINE' || event.data.action === 'openLine') && event.data.url) {
+        window.top.location.href = event.data.url;
+      }
+    });
 
     // Listen for browser Back button to close In-App Viewer gracefully
     window.addEventListener('popstate', (event) => {

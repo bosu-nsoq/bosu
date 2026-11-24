@@ -500,6 +500,65 @@
       box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
     }
 
+    /* Move Position Buttons in Reorder Mode */
+    .reorder-btn-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 10px;
+      width: 100%;
+      padding: 4px 6px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      border-radius: 12px;
+      touch-action: auto;
+      pointer-events: auto;
+    }
+    .btn-reorder-move {
+      background: rgba(168, 85, 247, 0.22);
+      border: 1px solid rgba(168, 85, 247, 0.5);
+      color: #E9D5FF;
+      width: 32px;
+      height: 30px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      touch-action: auto;
+      pointer-events: auto;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-reorder-move:hover:not(:disabled) {
+      background: rgba(168, 85, 247, 0.5);
+      color: #FFF;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+      transform: scale(1.06);
+    }
+    .btn-reorder-move:active:not(:disabled) {
+      transform: scale(0.92);
+      background: rgba(168, 85, 247, 0.7);
+    }
+    .btn-reorder-move:disabled {
+      opacity: 0.2;
+      cursor: not-allowed;
+      border-color: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.3);
+    }
+    .reorder-index-pill {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #C084FC;
+      padding: 2px 6px;
+      min-width: 24px;
+      text-align: center;
+      background: rgba(168, 85, 247, 0.15);
+      border-radius: 6px;
+    }
+
     /* Cosmic Search Bar */
     .cosmic-search-container {
       width: 100%;
@@ -1255,24 +1314,73 @@
         max-width: 100%;
       }
       .apps-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
         max-width: 100%;
         width: 100%;
-        gap: 14px;
+        gap: 10px;
       }
       .app-card {
-        padding: 14px 12px;
-        border-radius: 20px;
+        padding: 14px 8px 12px;
+        border-radius: 18px;
         width: 100%;
+        min-width: 0;
       }
       .app-icon-wrap {
-        width: 52px;
-        height: 52px;
+        width: 48px;
+        height: 48px;
         margin-bottom: 6px;
         padding: 0;
       }
       .app-icon-img {
-        border-radius: 13px;
+        border-radius: 12px;
+      }
+      .app-title {
+        font-size: 0.95rem;
+        margin-bottom: 4px;
+        gap: 4px;
+        width: 100%;
+      }
+      .app-title span {
+        font-size: 0.95rem;
+        max-width: 100%;
+      }
+      .drag-handle-badge {
+        width: 24px;
+        height: 24px;
+        font-size: 0.85rem;
+        top: 6px;
+        right: 6px;
+      }
+      .reorder-btn-bar {
+        padding: 2px 4px;
+        gap: 4px;
+        margin-top: 6px;
+      }
+      .btn-reorder-move {
+        width: 28px;
+        height: 26px;
+        font-size: 0.85rem;
+      }
+      .reorder-index-pill {
+        font-size: 0.72rem;
+        min-width: 20px;
+        padding: 1px 4px;
+      }
+      .maintenance-pill {
+        font-size: 0.65rem;
+        padding: 2px 6px;
+        gap: 3px;
+        border-radius: 8px;
+      }
+      .admin-controls-panel {
+        margin-top: 8px;
+        padding-top: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 4px;
+      }
+      .switch-wrap span {
+        font-size: 0.7rem;
       }
       .settings-menu {
         top: 60px;
@@ -1371,7 +1479,7 @@
     <div class="reorder-banner" id="reorderBanner" style="display: none;">
       <div class="reorder-banner-info">
         <i class="bi bi-arrows-move"></i>
-        <span>โหมดจัดเรียง: แตะหรือคลิกลากเพื่อสลับตำแหน่งแอป</span>
+        <span>โหมดจัดเรียง: แตะปุ่มลูกศรหรือลากเพื่อสลับตำแหน่งแอป</span>
       </div>
       <button class="btn-reorder-done" onclick="toggleReorderMode(false)">
         <i class="bi bi-check-lg"></i> เสร็จสิ้น
@@ -1931,6 +2039,10 @@
 
       if (isReorderMode) {
         closeSearchBar();
+      } else if (reorderSaveTimer) {
+        clearTimeout(reorderSaveTimer);
+        reorderSaveTimer = null;
+        saveAppsToCloudAsync(getApps());
       }
 
       const banner = document.getElementById('reorderBanner');
@@ -1943,6 +2055,36 @@
       }
 
       renderApps();
+    }
+
+    let reorderSaveTimer = null;
+    function debounceCloudSave(apps) {
+      clearTimeout(reorderSaveTimer);
+      reorderSaveTimer = setTimeout(() => {
+        saveAppsToCloudAsync(apps);
+        reorderSaveTimer = null;
+      }, 350);
+    }
+
+    // Step-by-step Move Buttons for Mobile and Touch Reordering
+    async function moveAppStep(appId, delta, event) {
+      if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+      let apps = getApps();
+      const currentIndex = apps.findIndex(a => a.id === appId);
+      if (currentIndex === -1) return;
+
+      const targetIndex = currentIndex + delta;
+      if (targetIndex < 0 || targetIndex >= apps.length) return;
+
+      const [movedApp] = apps.splice(currentIndex, 1);
+      apps.splice(targetIndex, 0, movedApp);
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
+      renderApps();
+      debounceCloudSave(apps);
     }
 
     async function reorderApps(sourceId, targetId) {
@@ -2075,7 +2217,7 @@
 
           // Mobile Touch events
           card.addEventListener('touchstart', (e) => {
-            if (e.target.closest('.btn-edit-title') || e.target.closest('.admin-controls-panel')) return;
+            if (e.target.closest('.btn-edit-title') || e.target.closest('.admin-controls-panel') || e.target.closest('.reorder-btn-bar')) return;
             const touch = e.touches[0];
             touchStartX = touch.clientX;
             touchStartY = touch.clientY;
@@ -2159,6 +2301,20 @@
           ? `<div class="drag-handle-badge" title="ลากเพื่อจัดเรียง"><i class="bi bi-grip-vertical"></i></div>`
           : '';
 
+        const reorderControlsHtml = isReorderMode
+          ? `
+            <div class="reorder-btn-bar" onclick="event.stopPropagation()">
+              <button type="button" class="btn-reorder-move" onclick="moveAppStep('${app.id}', -1, event)" title="ย้ายไปก่อนหน้า" ${index === 0 ? 'disabled' : ''}>
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <span class="reorder-index-pill" title="ลำดับที่ ${index + 1}">#${index + 1}</span>
+              <button type="button" class="btn-reorder-move" onclick="moveAppStep('${app.id}', 1, event)" title="ย้ายไปถัดไป" ${index === apps.length - 1 ? 'disabled' : ''}>
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          `
+          : '';
+
         let editNameBtnHtml = '';
         if (currentRole === 'admin' && !isReorderMode) {
           editNameBtnHtml = `
@@ -2177,6 +2333,7 @@
             <span>${app.name}</span>
             ${editNameBtnHtml}
           </h2>
+          ${reorderControlsHtml}
           ${maintenancePillHtml}
           ${adminControlsHtml}
         `;
@@ -2601,7 +2758,7 @@
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=18')
+        navigator.serviceWorker.register('./sw.js?v=19')
           .then(reg => {
             reg.update();
             console.log('Bosu PWA Registered', reg);

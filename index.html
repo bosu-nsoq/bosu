@@ -1585,11 +1585,12 @@
       }
     ];
 
-    // Admin PIN
+    // Admin PIN & Launch Guard
     const ADMIN_PIN = '8055';
     let currentRole = 'guest'; // 'guest' | 'admin'
     let enteredPin = '';
     let currentAppUrl = '';
+    let isInitialLaunchLock = true;
 
     // Storage & Cloud Backend Settings
     const STORAGE_KEY = 'bosu_hub_apps_v2';
@@ -1622,7 +1623,12 @@
                   await preloadAllAppIcons(cloudApps);
                   renderApps();
                 } else {
-                  preloadAllAppIcons(cloudApps).then(() => renderApps());
+                  preloadAllAppIcons(cloudApps).then(() => {
+                    const viewer = document.getElementById('inAppViewer');
+                    if (!viewer || !viewer.classList.contains('active')) {
+                      renderApps();
+                    }
+                  });
                 }
               }
             }
@@ -1709,7 +1715,15 @@
 
     function hideCosmicLoader() {
       const loader = document.getElementById('cosmicLoader');
-      if (loader) loader.classList.remove('active');
+      if (loader) {
+        loader.classList.remove('active');
+        loader.style.pointerEvents = 'auto';
+        setTimeout(() => {
+          if (!loader.classList.contains('active')) {
+            loader.style.pointerEvents = 'none';
+          }
+        }, 350);
+      }
     }
 
     // Favicon & Image Preloader
@@ -2104,6 +2118,7 @@
 
         // Card click handler
         card.onclick = (e) => {
+          if (isInitialLaunchLock) return;
           if (isReorderMode) return;
           if (e.target.closest('.admin-controls-panel')) return;
           
@@ -2582,7 +2597,7 @@
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=16')
+        navigator.serviceWorker.register('./sw.js?v=17')
           .then(reg => {
             reg.update();
             console.log('Bosu PWA Registered', reg);
@@ -2591,42 +2606,59 @@
       });
     }
 
-    // Initial Start: Show cosmic splash on load, load cloud data & pre-cache all favicons before displaying
+    // Initial Start: Show cosmic splash on load, wait for sheet cloud data & pre-cache all favicons before displaying
     document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Reset and ensure in-app viewer is closed on initial launch
+      closeInAppViewer();
+      const viewerEl = document.getElementById('inAppViewer');
+      if (viewerEl) viewerEl.classList.remove('active');
+      const iframeEl = document.getElementById('appIframe');
+      if (iframeEl) iframeEl.src = 'about:blank';
+      if (window.history.state && window.history.state.inAppView) {
+        window.history.replaceState({ inAppView: false }, document.title);
+      }
+
       // Remove any lingering navbar buttons
       document.querySelectorAll('.viewer-nav-right, .viewer-tool-btn').forEach(el => el.remove());
 
       showCosmicLoader('https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังโหลดข้อมูล');
 
-      // 1. Fetch latest data from Cloud (or fallback to local if offline)
+      // 2. Fetch latest data from Sheet / Cloud (wait until complete)
+      let cloudFetched = false;
       try {
-        await Promise.race([
-          fetchAppsFromCloud(false),
-          new Promise(resolve => setTimeout(resolve, 2000))
+        const cloudData = await Promise.race([
+          fetchAppsFromCloud(true),
+          new Promise(resolve => setTimeout(resolve, 8000))
         ]);
+        if (cloudData && Array.isArray(cloudData) && cloudData.length > 0) {
+          cloudFetched = true;
+        }
       } catch (e) {
         console.warn('Initial cloud sync error:', e);
       }
 
-      // 2. Preload all app favicons so every icon is ready in browser cache
-      const currentApps = getApps();
-
-      try {
-        await Promise.race([
-          preloadAllAppIcons(currentApps),
-          new Promise(resolve => setTimeout(resolve, 2500))
-        ]);
-      } catch (e) {
-        console.warn('Favicon preload error:', e);
+      // 3. If cloud didn't render (e.g. offline or timeout), render from local cache
+      if (!cloudFetched) {
+        const currentApps = getApps();
+        try {
+          await Promise.race([
+            preloadAllAppIcons(currentApps),
+            new Promise(resolve => setTimeout(resolve, 2500))
+          ]);
+        } catch (e) {
+          console.warn('Favicon preload error:', e);
+        }
+        renderApps();
       }
-
-      // 3. Render the grid with preloaded apps and favicons
-      renderApps();
 
       // 4. Smoothly fade out the loader and reveal the current screen
       setTimeout(() => {
         hideCosmicLoader();
-      }, 250);
+        // Release launch lock after fade-out completes to prevent tap fallthrough
+        setTimeout(() => {
+          isInitialLaunchLock = false;
+        }, 500);
+      }, 300);
     });
 
     // Background Auto-Sync: Poll new data every 5 seconds seamlessly

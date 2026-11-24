@@ -999,29 +999,15 @@
       color: #FFF;
     }
 
-    .viewer-nav-right {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-shrink: 0;
-    }
-
+    .viewer-nav-right,
     .viewer-tool-btn {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--border-space);
-      color: #FFF;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .viewer-tool-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      opacity: 0 !important;
+      width: 0 !important;
+      height: 0 !important;
+      overflow: hidden !important;
     }
 
     .viewer-iframe-wrapper {
@@ -2192,6 +2178,11 @@
       viewerIcon.src = iconSrc;
       viewerIcon.alt = title;
 
+      // Ensure right-side buttons are removed completely from DOM
+      const rightNav = viewer.querySelector('.viewer-nav-right');
+      if (rightNav) rightNav.remove();
+      viewer.querySelectorAll('.viewer-tool-btn').forEach(btn => btn.remove());
+
       // Show cosmic loader with the app's favicon/icon (No Black Screen!)
       showCosmicLoader(iconSrc, 'กำลังโหลดข้อมูล');
 
@@ -2591,14 +2582,20 @@
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('Bosu PWA Registered', reg))
+        navigator.serviceWorker.register('./sw.js?v=16')
+          .then(reg => {
+            reg.update();
+            console.log('Bosu PWA Registered', reg);
+          })
           .catch(err => console.log('SW Error', err));
       });
     }
 
     // Initial Start: Show cosmic splash on load, load cloud data & pre-cache all favicons before displaying
     document.addEventListener('DOMContentLoaded', async () => {
+      // Remove any lingering navbar buttons
+      document.querySelectorAll('.viewer-nav-right, .viewer-tool-btn').forEach(el => el.remove());
+
       showCosmicLoader('https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังโหลดข้อมูล');
 
       // 1. Fetch latest data from Cloud (or fallback to local if offline)

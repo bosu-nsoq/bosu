@@ -1,9 +1,13 @@
 // Service Worker for Bosu Web App Hub
-const CACHE_NAME = 'bosu-hub-cache-v20';
+const CACHE_NAME = 'bosu-hub-cache-v21';
 const STATIC_ASSETS = [
   './',
   './index.html',
   './manifest.json',
+  './Bosu.png',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/apple-touch-icon.png',
   'https://fonts.googleapis.com/css2?family=Mali:wght@300;400;500;600;700&display=swap',
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'
 ];

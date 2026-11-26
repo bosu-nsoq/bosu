@@ -6,8 +6,8 @@
   <title>Bosu</title>
   
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="https://i.postimg.cc/0j2mFF1q/Bosu.png">
-  <link rel="shortcut icon" type="image/png" href="https://i.postimg.cc/0j2mFF1q/Bosu.png">
+  <link rel="icon" type="image/png" href="./icons/icon-192.png">
+  <link rel="shortcut icon" type="image/png" href="./icons/icon-192.png">
   
   <!-- PWA & Apple Mobile Web App Tags -->
   <link rel="manifest" href="manifest.json">
@@ -15,7 +15,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Bosu">
-  <link rel="apple-touch-icon" href="https://i.postimg.cc/0j2mFF1q/Bosu.png">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
   <meta name="mobile-web-app-capable" content="yes">
 
   <!-- Google Font: Mali -->
@@ -1418,7 +1418,7 @@
   <!-- HEADER NAVIGATION (Single Line on Mobile) -->
   <header class="app-header">
     <div class="header-left">
-      <img src="https://i.postimg.cc/0j2mFF1q/Bosu.png" alt="Bosu Logo" class="app-brand-logo">
+      <img src="./Bosu.png" alt="Bosu Logo" class="app-brand-logo">
       <span class="brand-title">Bosu</span>
       <span id="roleIndicator" class="role-badge badge-guest">Guest</span>
     </div>
@@ -1497,7 +1497,7 @@
     <div class="cosmic-loader-portal">
       <div class="loader-ring-1"></div>
       <div class="loader-ring-2"></div>
-      <img src="https://i.postimg.cc/0j2mFF1q/Bosu.png" alt="Loading" id="loaderIcon" class="loader-icon-center">
+      <img src="./Bosu.png" alt="Loading" id="loaderIcon" class="loader-icon-center">
     </div>
     <div class="cosmic-loader-text" id="loaderText">
       <span>กำลังโหลดข้อมูล</span>
@@ -1588,7 +1588,7 @@
           <label class="form-label">ไอคอนแอป (ดึงอัตโนมัติ / ใส่ลิงก์เองได้)</label>
           <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
             <div style="width: 48px; height: 48px; border-radius: 14px; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 6px;">
-              <img id="autoFaviconPreview" src="https://i.postimg.cc/0j2mFF1q/Bosu.png" alt="Preview" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
+              <img id="autoFaviconPreview" src="./Bosu.png" alt="Preview" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
             </div>
             <div style="flex: 1; min-width: 0;">
               <span id="autoFaviconStatus" style="font-size: 0.82rem; color: var(--text-sub); font-weight: 600; display: block;">กรอก URL ด้านบนเพื่อดึง Favicon</span>
@@ -1817,7 +1817,7 @@
       const loader = document.getElementById('cosmicLoader');
       const loaderIcon = document.getElementById('loaderIcon');
       const loaderText = document.getElementById('loaderText');
-      if (loaderIcon) loaderIcon.src = iconSrc || 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
+      if (loaderIcon) loaderIcon.src = iconSrc || './Bosu.png';
       if (loaderText) {
         loaderText.innerHTML = `<span>กำลังโหลดข้อมูล</span>`;
       }
@@ -1838,7 +1838,7 @@
     }
 
     // Favicon & Image Preloader
-    function preloadImage(url, fallbackUrl = 'https://i.postimg.cc/0j2mFF1q/Bosu.png', timeoutMs = 3500) {
+    function preloadImage(url, fallbackUrl = './Bosu.png', timeoutMs = 3500) {
       if (!url) return Promise.resolve(fallbackUrl);
       return new Promise((resolve) => {
         const img = new Image();
@@ -1861,10 +1861,10 @@
           if (fallbackUrl && fallbackUrl !== url) {
             const fallbackImg = new Image();
             fallbackImg.onload = () => complete(fallbackUrl);
-            fallbackImg.onerror = () => complete('https://i.postimg.cc/0j2mFF1q/Bosu.png');
+            fallbackImg.onerror = () => complete('./Bosu.png');
             fallbackImg.src = fallbackUrl;
           } else {
-            complete('https://i.postimg.cc/0j2mFF1q/Bosu.png');
+            complete('./Bosu.png');
           }
         };
         img.src = url;
@@ -1877,13 +1877,13 @@
         const domain = getDomainFromUrl(app.url);
         const fallback = domain && !domain.includes('github.io')
           ? `https://www.google.com/s2/favicons?domain=${domain}&sz=128`
-          : 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
+          : './Bosu.png';
         const validIcon = await preloadImage(app.icon, fallback);
-        if (validIcon && app.icon !== validIcon && validIcon !== 'https://i.postimg.cc/0j2mFF1q/Bosu.png') {
+        if (validIcon && app.icon !== validIcon && validIcon !== './Bosu.png') {
           app.icon = validIcon;
         }
       });
-      promises.push(preloadImage('https://i.postimg.cc/0j2mFF1q/Bosu.png'));
+      promises.push(preloadImage('./Bosu.png'));
       await Promise.allSettled(promises);
     }
 
@@ -1967,7 +1967,7 @@
       } else if (count === 1 && domain) {
         img.src = `https://icons.duckduckgo.com/ip3/${domain}.ico`;
       } else {
-        img.src = 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
+        img.src = './Bosu.png';
       }
     }
 
@@ -2096,7 +2096,7 @@
       const [movedApp] = apps.splice(sourceIndex, 1);
       apps.splice(targetIndex, 0, movedApp);
 
-      showCosmicLoader(movedApp.icon || 'https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังโหลดข้อมูล');
+      showCosmicLoader(movedApp.icon || './Bosu.png', 'กำลังโหลดข้อมูล');
       await saveAppsToCloudAsync(apps);
       renderApps();
       hideCosmicLoader();
@@ -2134,7 +2134,7 @@
         return;
       }
 
-      const appIcon = app.icon || 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
+      const appIcon = app.icon || './Bosu.png';
       closeEditNameModal();
       showCosmicLoader(appIcon, 'กำลังโหลดข้อมูล');
 
@@ -2547,7 +2547,7 @@
 
     function verifyPin() {
       if (enteredPin === ADMIN_PIN) {
-        showCosmicLoader('https://i.postimg.cc/0j2mFF1q/Bosu.png', 'เข้าสู่ระบบ Admin สำเร็จ...');
+        showCosmicLoader('./Bosu.png', 'เข้าสู่ระบบ Admin สำเร็จ...');
         setTimeout(() => {
           hideCosmicLoader();
           currentRole = 'admin';
@@ -2569,7 +2569,7 @@
       const apps = getApps();
       const app = apps.find(a => a.id === appId);
       if (app) {
-        showCosmicLoader(app.icon || 'https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังโหลดข้อมูล');
+        showCosmicLoader(app.icon || './Bosu.png', 'กำลังโหลดข้อมูล');
         app.active = isActive;
         await saveAppsToCloudAsync(apps);
         renderApps();
@@ -2579,7 +2579,7 @@
 
     async function deleteApp(appId, appName) {
       if (confirm(`คุณต้องการลบ "${appName}" ออกจากศูนย์รวมแอปใช่หรือไม่?`)) {
-        showCosmicLoader('https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังโหลดข้อมูล');
+        showCosmicLoader('./Bosu.png', 'กำลังโหลดข้อมูล');
         let apps = getApps();
         apps = apps.filter(a => a.id !== appId);
         await saveAppsToCloudAsync(apps);
@@ -2603,7 +2603,7 @@
       const iconInput = document.getElementById('newAppIcon');
 
       if (!urlInput) {
-        previewImg.src = 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
+        previewImg.src = './Bosu.png';
         statusText.textContent = 'กรอก URL ด้านบนเพื่อดึง Favicon';
         statusText.style.color = 'var(--text-sub)';
         iconInput.value = '';
@@ -2621,7 +2621,7 @@
         statusText.style.color = '#10B981';
       } else {
         const domain = getDomainFromUrl(urlInput);
-        const fallback = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=128` : 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
+        const fallback = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=128` : './Bosu.png';
         previewImg.src = fallback;
         iconInput.value = fallback;
         statusText.textContent = 'ใช้ไอคอนตามค่าเริ่มต้น';
@@ -2645,7 +2645,7 @@
       const statusText = document.getElementById('autoFaviconStatus');
       const iconInput = document.getElementById('newAppIcon');
       
-      if (previewImg) previewImg.src = 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
+      if (previewImg) previewImg.src = './Bosu.png';
       if (statusText) {
         statusText.textContent = 'กรอก URL ด้านบนเพื่อดึง Favicon';
         statusText.style.color = 'var(--text-sub)';
@@ -2677,7 +2677,7 @@
       }
       if (!icon) {
         const domain = getDomainFromUrl(url);
-        icon = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=128` : 'https://i.postimg.cc/0j2mFF1q/Bosu.png';
+        icon = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=128` : './Bosu.png';
       }
 
       const newApp = {
@@ -2757,7 +2757,7 @@
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=20')
+        navigator.serviceWorker.register('./sw.js?v=21')
           .then(reg => {
             reg.update();
             console.log('Bosu PWA Registered', reg);
@@ -2781,7 +2781,7 @@
       // Remove any lingering navbar buttons
       document.querySelectorAll('.viewer-nav-right, .viewer-tool-btn').forEach(el => el.remove());
 
-      showCosmicLoader('https://i.postimg.cc/0j2mFF1q/Bosu.png', 'กำลังโหลดข้อมูล');
+      showCosmicLoader('./Bosu.png', 'กำลังโหลดข้อมูล');
 
       // 2. Fetch latest data from Sheet / Cloud (wait until complete)
       let cloudFetched = false;

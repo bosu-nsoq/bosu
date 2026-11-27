@@ -427,12 +427,37 @@
       font-size: 1.15rem;
       color: #C084FC;
     }
+    .reorder-banner-btns {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-reorder-cancel {
+      background: rgba(255, 255, 255, 0.1);
+      color: #E2E8F0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .btn-reorder-cancel:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #FFF;
+      transform: translateY(-2px);
+    }
     .btn-reorder-done {
       background: linear-gradient(135deg, #A855F7, #6366F1);
       color: #FFF;
       border: none;
       border-radius: 12px;
-      padding: 6px 14px;
+      padding: 6px 16px;
       font-size: 0.85rem;
       font-weight: 700;
       cursor: pointer;
@@ -456,7 +481,7 @@
       background: rgba(15, 23, 42, 0.85);
       user-select: none;
       -webkit-user-select: none;
-      touch-action: none;
+      touch-action: pan-y;
     }
     .app-card.reorder-mode-card:hover {
       border-color: #A855F7;
@@ -492,6 +517,7 @@
       justify-content: center;
       font-size: 1.05rem;
       cursor: grab;
+      touch-action: none;
       transition: all 0.2s ease;
     }
     .app-card:hover .drag-handle-badge {
@@ -1281,6 +1307,115 @@
       flex-shrink: 0;
     }
 
+    /* Cute Confirmation / Alert Modal */
+    .cute-modal-overlay {
+      z-index: 10005;
+    }
+    .cute-modal-card {
+      text-align: center;
+      max-width: 340px;
+      padding: 28px 22px 24px;
+      border-radius: 28px;
+      background: radial-gradient(circle at 50% 0%, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
+      border: 1.5px solid rgba(168, 85, 247, 0.4);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(168, 85, 247, 0.2);
+      animation: cuteBounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes cuteBounce {
+      0% { transform: scale(0.85); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .cute-modal-icon-wrap {
+      width: 68px;
+      height: 68px;
+      border-radius: 22px;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      background: rgba(168, 85, 247, 0.16);
+      color: #C084FC;
+      border: 1.5px solid rgba(168, 85, 247, 0.35);
+      box-shadow: 0 8px 24px rgba(168, 85, 247, 0.25);
+      animation: cutePulse 2s infinite ease-in-out;
+    }
+    @keyframes cutePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+    .cute-modal-icon-wrap.danger {
+      background: rgba(239, 68, 68, 0.18);
+      color: #F87171;
+      border-color: rgba(239, 68, 68, 0.4);
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+    }
+    .cute-modal-icon-wrap.success {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34D399;
+      border-color: rgba(16, 185, 129, 0.4);
+      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+    }
+    .cute-modal-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #FFF;
+      margin-bottom: 10px;
+      letter-spacing: 0.2px;
+    }
+    .cute-modal-message {
+      font-size: 0.95rem;
+      color: var(--text-sub);
+      line-height: 1.5;
+      margin-bottom: 22px;
+      word-break: break-word;
+    }
+    .cute-modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .btn-cute-cancel {
+      flex: 1;
+      height: 44px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #E2E8F0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-cute-cancel:hover {
+      background: rgba(255, 255, 255, 0.16);
+      color: #FFF;
+    }
+    .btn-cute-confirm {
+      flex: 1;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #A855F7, #6366F1);
+      border: none;
+      color: #FFF;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+      transition: all 0.2s ease;
+    }
+    .btn-cute-confirm:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
+    }
+    .btn-cute-confirm.danger {
+      background: linear-gradient(135deg, #EF4444, #DC2626);
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    }
+    .btn-cute-confirm.danger:hover {
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
+    }
+
     @media (max-width: 640px) {
       .app-header {
         height: 56px;
@@ -1309,7 +1444,7 @@
         gap: 4px;
       }
       .main-container {
-        padding: 16px 12px 40px;
+        padding: 16px 8px 40px;
         width: 100%;
         max-width: 100%;
       }
@@ -1317,12 +1452,34 @@
         grid-template-columns: 1fr;
         max-width: 100%;
         width: 100%;
-        gap: 12px;
+        gap: 14px;
+        padding: 0 28px;
+        box-sizing: border-box;
       }
       .app-card {
-        padding: 14px 12px;
+        padding: 14px 16px;
         border-radius: 20px;
         width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
+      }
+      .reorder-banner {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+        padding: 12px 14px;
+        width: calc(100% - 24px);
+        margin: 0 auto 16px;
+      }
+      .reorder-banner-btns {
+        width: 100%;
+        justify-content: center;
+        gap: 10px;
+      }
+      .btn-reorder-done, .btn-reorder-cancel {
+        flex: 1;
+        justify-content: center;
+        padding: 8px 14px;
       }
       .app-icon-wrap {
         width: 52px;
@@ -1478,11 +1635,16 @@
     <div class="reorder-banner" id="reorderBanner" style="display: none;">
       <div class="reorder-banner-info">
         <i class="bi bi-arrows-move"></i>
-        <span>โหมดจัดเรียง: แตะปุ่มลูกศรหรือลากเพื่อสลับตำแหน่งแอป</span>
+        <span>จัดเรียงแอป: ลากหรือแตะลูกศร แล้วกด "บันทึก"</span>
       </div>
-      <button class="btn-reorder-done" onclick="toggleReorderMode(false)">
-        <i class="bi bi-check-lg"></i> เสร็จสิ้น
-      </button>
+      <div class="reorder-banner-btns">
+        <button type="button" class="btn-reorder-cancel" onclick="cancelReorderMode()">
+          <i class="bi bi-x-lg"></i> ยกเลิก
+        </button>
+        <button type="button" class="btn-reorder-done" onclick="saveReorderMode()">
+          <i class="bi bi-cloud-check-fill"></i> บันทึก
+        </button>
+      </div>
     </div>
 
     <section class="apps-grid" id="appsGrid">
@@ -1668,33 +1830,28 @@
   </div>
 
   <!-- ============================================================
+       CUTE CONFIRM / ALERT MODAL
+       ============================================================ -->
+  <div class="cosmic-modal-overlay cute-modal-overlay" id="cuteModal">
+    <div class="cosmic-modal-card cute-modal-card">
+      <div class="cute-modal-icon-wrap" id="cuteModalIconWrap">
+        <i class="bi bi-question-circle" id="cuteModalIcon"></i>
+      </div>
+      <h3 class="cute-modal-title" id="cuteModalTitle">ยืนยันการทำรายการ</h3>
+      <p class="cute-modal-message" id="cuteModalMessage">ข้อความแจ้งเตือน</p>
+      <div class="cute-modal-actions" id="cuteModalActions">
+        <button type="button" class="btn-cute-cancel" id="cuteModalCancelBtn">ยกเลิก</button>
+        <button type="button" class="btn-cute-confirm" id="cuteModalConfirmBtn">ยืนยัน</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
        JAVASCRIPT APPLICATION LOGIC
        ============================================================ -->
   <script>
-    // Default Base Apps
-    const DEFAULT_APPS = [
-      {
-        id: 'wntk-library-system',
-        name: 'WNTK Library System',
-        url: 'https://bosu-nsoq.github.io/wntk-library-system/',
-        icon: 'https://i.postimg.cc/D0Dw84J1/WNTK.png',
-        active: true
-      },
-      {
-        id: 'financial',
-        name: 'Financial',
-        url: 'https://bosu-nsoq.github.io/financial/',
-        icon: 'https://i.postimg.cc/T2Cngdnd/Financial.png',
-        active: true
-      },
-      {
-        id: 'lunar',
-        name: 'Lunar',
-        url: 'https://bosu-nsoq.github.io/lunar/',
-        icon: 'https://i.postimg.cc/xC1sKNwZ/Lunar.png',
-        active: true
-      }
-    ];
+    // Default Base Apps (Strictly dynamically populated from Google Sheets)
+    const DEFAULT_APPS = [];
 
     // Admin PIN & Launch Guard
     const ADMIN_PIN = '8055';
@@ -1702,10 +1859,81 @@
     let enteredPin = '';
     let currentAppUrl = '';
     let isInitialLaunchLock = true;
+    let reorderWorkingApps = null;
 
     // Storage & Cloud Backend Settings
-    const STORAGE_KEY = 'bosu_hub_apps_v2';
+    const STORAGE_KEY = 'bosu_hub_apps_v3';
     const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbznuwVPbNJ-QZyKqpJayU2XAIpFrT-FhYzXqaSFyzDdYziPmZiNI-936rHR4oV6FVpT/exec';
+
+    // Cute Custom Popup Modal System (Confirm & Alert)
+    function showCuteConfirm({ title = 'ยืนยันการทำรายการ', message = '', icon = 'bi-question-circle', confirmText = 'ยืนยัน', cancelText = 'ยกเลิก', danger = false }) {
+      return new Promise((resolve) => {
+        const modal = document.getElementById('cuteModal');
+        const iconWrap = document.getElementById('cuteModalIconWrap');
+        const iconEl = document.getElementById('cuteModalIcon');
+        const titleEl = document.getElementById('cuteModalTitle');
+        const msgEl = document.getElementById('cuteModalMessage');
+        const cancelBtn = document.getElementById('cuteModalCancelBtn');
+        const confirmBtn = document.getElementById('cuteModalConfirmBtn');
+
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+        iconEl.className = 'bi ' + icon;
+        
+        iconWrap.className = 'cute-modal-icon-wrap' + (danger ? ' danger' : '');
+        confirmBtn.className = 'btn-cute-confirm' + (danger ? ' danger' : '');
+        confirmBtn.textContent = confirmText;
+        cancelBtn.textContent = cancelText;
+        cancelBtn.style.display = 'block';
+
+        modal.style.display = 'flex';
+
+        const cleanup = () => {
+          modal.style.display = 'none';
+          cancelBtn.onclick = null;
+          confirmBtn.onclick = null;
+        };
+
+        cancelBtn.onclick = () => {
+          cleanup();
+          resolve(false);
+        };
+
+        confirmBtn.onclick = () => {
+          cleanup();
+          resolve(true);
+        };
+      });
+    }
+
+    function showCuteAlert({ title = 'แจ้งเตือน', message = '', icon = 'bi-info-circle', okText = 'ตกลง', type = 'info' }) {
+      return new Promise((resolve) => {
+        const modal = document.getElementById('cuteModal');
+        const iconWrap = document.getElementById('cuteModalIconWrap');
+        const iconEl = document.getElementById('cuteModalIcon');
+        const titleEl = document.getElementById('cuteModalTitle');
+        const msgEl = document.getElementById('cuteModalMessage');
+        const cancelBtn = document.getElementById('cuteModalCancelBtn');
+        const confirmBtn = document.getElementById('cuteModalConfirmBtn');
+
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+        iconEl.className = 'bi ' + icon;
+        
+        iconWrap.className = 'cute-modal-icon-wrap' + (type === 'success' ? ' success' : type === 'danger' ? ' danger' : '');
+        confirmBtn.className = 'btn-cute-confirm' + (type === 'danger' ? ' danger' : '');
+        confirmBtn.textContent = okText;
+        cancelBtn.style.display = 'none';
+
+        modal.style.display = 'flex';
+
+        confirmBtn.onclick = () => {
+          modal.style.display = 'none';
+          confirmBtn.onclick = null;
+          resolve(true);
+        };
+      });
+    }
 
     let isFetchingCloud = false;
     let isSavingCloud = false;
@@ -1784,26 +2012,14 @@
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
           const apps = JSON.parse(stored);
-          let modified = false;
-
-          // Repair default apps or broken links if any
-          apps.forEach(app => {
-            const def = DEFAULT_APPS.find(d => d.id === app.id || d.url === app.url);
-            if (def && (!app.icon || app.icon.includes('google.com/s2/favicons?domain=bosu-nsoq.github.io'))) {
-              app.icon = def.icon;
-              modified = true;
-            }
-          });
-
-          if (modified) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
+          if (Array.isArray(apps)) {
+            return apps;
           }
-          return apps;
         }
       } catch (e) {
         console.error('Error reading storage', e);
       }
-      return DEFAULT_APPS;
+      return [];
     }
 
     function saveApps(apps) {
@@ -2038,10 +2254,10 @@
 
       if (isReorderMode) {
         closeSearchBar();
-      } else if (reorderSaveTimer) {
-        clearTimeout(reorderSaveTimer);
-        reorderSaveTimer = null;
-        saveAppsToCloudAsync(getApps());
+        // Clone current apps as temporary working copy for rearranging
+        reorderWorkingApps = JSON.parse(JSON.stringify(getApps()));
+      } else {
+        reorderWorkingApps = null;
       }
 
       const banner = document.getElementById('reorderBanner');
@@ -2056,50 +2272,69 @@
       renderApps();
     }
 
-    let reorderSaveTimer = null;
-    function debounceCloudSave(apps) {
-      clearTimeout(reorderSaveTimer);
-      reorderSaveTimer = setTimeout(() => {
-        saveAppsToCloudAsync(apps);
-        reorderSaveTimer = null;
-      }, 350);
+    function cancelReorderMode() {
+      toggleReorderMode(false);
+    }
+
+    async function saveReorderMode() {
+      if (!reorderWorkingApps) {
+        cancelReorderMode();
+        return;
+      }
+      const appsToSave = reorderWorkingApps;
+      isReorderMode = false;
+      reorderWorkingApps = null;
+
+      const banner = document.getElementById('reorderBanner');
+      if (banner) banner.style.display = 'none';
+      const menuText = document.getElementById('reorderMenuText');
+      if (menuText) menuText.textContent = 'จัดเรียงแอป';
+
+      showCosmicLoader('./Bosu.png', 'กำลังโหลดข้อมูล');
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appsToSave));
+      await saveAppsToCloudAsync(appsToSave);
+      renderApps();
+      hideCosmicLoader();
+
+      showCuteAlert({
+        title: 'จัดเรียงสำเร็จ',
+        message: 'บันทึกตำแหน่งแอปใหม่เข้าสู่ระบบเรียบร้อยแล้ว ✨',
+        icon: 'bi-check-circle-fill',
+        okText: 'ยอดเยี่ยม',
+        type: 'success'
+      });
     }
 
     // Step-by-step Move Buttons for Mobile and Touch Reordering
-    async function moveAppStep(appId, delta, event) {
+    function moveAppStep(appId, delta, event) {
       if (event) {
         event.stopPropagation();
         event.preventDefault();
       }
-      let apps = getApps();
-      const currentIndex = apps.findIndex(a => a.id === appId);
+      if (!reorderWorkingApps) reorderWorkingApps = JSON.parse(JSON.stringify(getApps()));
+      const currentIndex = reorderWorkingApps.findIndex(a => a.id === appId);
       if (currentIndex === -1) return;
 
       const targetIndex = currentIndex + delta;
-      if (targetIndex < 0 || targetIndex >= apps.length) return;
+      if (targetIndex < 0 || targetIndex >= reorderWorkingApps.length) return;
 
-      const [movedApp] = apps.splice(currentIndex, 1);
-      apps.splice(targetIndex, 0, movedApp);
+      const [movedApp] = reorderWorkingApps.splice(currentIndex, 1);
+      reorderWorkingApps.splice(targetIndex, 0, movedApp);
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
       renderApps();
-      debounceCloudSave(apps);
     }
 
-    async function reorderApps(sourceId, targetId) {
-      let apps = getApps();
-      const sourceIndex = apps.findIndex(a => a.id === sourceId);
-      const targetIndex = apps.findIndex(a => a.id === targetId);
+    function reorderApps(sourceId, targetId) {
+      if (!reorderWorkingApps) reorderWorkingApps = JSON.parse(JSON.stringify(getApps()));
+      const sourceIndex = reorderWorkingApps.findIndex(a => a.id === sourceId);
+      const targetIndex = reorderWorkingApps.findIndex(a => a.id === targetId);
 
       if (sourceIndex === -1 || targetIndex === -1 || sourceIndex === targetIndex) return;
 
-      const [movedApp] = apps.splice(sourceIndex, 1);
-      apps.splice(targetIndex, 0, movedApp);
+      const [movedApp] = reorderWorkingApps.splice(sourceIndex, 1);
+      reorderWorkingApps.splice(targetIndex, 0, movedApp);
 
-      showCosmicLoader(movedApp.icon || './Bosu.png', 'กำลังโหลดข้อมูล');
-      await saveAppsToCloudAsync(apps);
       renderApps();
-      hideCosmicLoader();
     }
 
     // Edit App Name (Admin Mode)
@@ -2148,7 +2383,7 @@
     // 2. Render Apps Grid
     function renderApps() {
       const grid = document.getElementById('appsGrid');
-      const allApps = getApps();
+      const allApps = (isReorderMode && reorderWorkingApps) ? reorderWorkingApps : getApps();
       grid.innerHTML = '';
 
       const apps = allApps.filter(app => {
@@ -2214,9 +2449,9 @@
             draggedAppId = null;
           });
 
-          // Mobile Touch events
+          // Mobile Touch events (Only initiate drag when touching the drag handle badge)
           card.addEventListener('touchstart', (e) => {
-            if (e.target.closest('.btn-edit-title') || e.target.closest('.admin-controls-panel') || e.target.closest('.reorder-btn-bar')) return;
+            if (!e.target.closest('.drag-handle-badge')) return;
             const touch = e.touches[0];
             touchStartX = touch.clientX;
             touchStartY = touch.clientY;
@@ -2578,7 +2813,15 @@
     }
 
     async function deleteApp(appId, appName) {
-      if (confirm(`คุณต้องการลบ "${appName}" ออกจากศูนย์รวมแอปใช่หรือไม่?`)) {
+      const confirmed = await showCuteConfirm({
+        title: 'ยืนยันการลบแอป',
+        message: `คุณต้องการลบ "${appName}" ออกจากศูนย์รวมแอปใช่หรือไม่?`,
+        icon: 'bi-trash3-fill',
+        confirmText: 'ลบแอป',
+        cancelText: 'ยกเลิก',
+        danger: true
+      });
+      if (confirmed) {
         showCosmicLoader('./Bosu.png', 'กำลังโหลดข้อมูล');
         let apps = getApps();
         apps = apps.filter(a => a.id !== appId);
@@ -2734,7 +2977,7 @@
       btnInstall.style.display = 'inline-flex';
     }
 
-    function handleInstallClick() {
+    async function handleInstallClick() {
       if (deferredPrompt) {
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choiceResult) => {
@@ -2746,7 +2989,12 @@
       } else if (isIos()) {
         document.getElementById('iosModal').style.display = 'flex';
       } else {
-        alert('คุณสามารถติดตั้งแอปนี้ได้โดยกดปุ่มเมนู 3 จุดของเบราว์เซอร์ แล้วเลือก "ติดตั้งแอป" (Install App)');
+        await showCuteAlert({
+          title: 'วิธีติดตั้งแอป Bosu',
+          message: 'คุณสามารถติดตั้งแอปนี้ได้โดยกดปุ่มเมนู 3 จุดของเบราว์เซอร์ แล้วเลือก "ติดตั้งแอป" (Install App)',
+          icon: 'bi-download',
+          okText: 'เข้าใจแล้ว'
+        });
       }
     }
 
@@ -2757,7 +3005,7 @@
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=21')
+        navigator.serviceWorker.register('./sw.js?v=22')
           .then(reg => {
             reg.update();
             console.log('Bosu PWA Registered', reg);
